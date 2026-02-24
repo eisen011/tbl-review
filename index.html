@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TBL Faculty Review Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f4f0;--card:#fff;--warm:#faf9f6;--input:#f8f8f6;--text:#1c1917;--text2:#57534e;--muted:#a8a29e;--accent:#1e40af;--accent-h:#1e3a8a;--accent-l:#dbeafe;--ok:#15803d;--ok-l:#dcfce7;--warn:#b45309;--warn-l:#fef3c7;--err:#dc2626;--err-l:#fee2e2;--bdr:#e7e5e4;--r:8px;--rl:12px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.float-export{position:fixed;bottom:1.5rem;right:1.5rem;z-index:99;background:#2563eb;color:#fff;border:none;padding:.65rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:all .2s;font-family:inherit}
+.float-export:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
+.hdr{background:#1c1917;color:#fff;padding:.75rem 2rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.hdr-in{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.hdr-t{font-family:'Instrument Serif',Georgia,serif;font-size:1.3rem}.hdr-t span{color:#93c5fd}
+.hdr-m{display:flex;gap:1.5rem;align-items:center;font-size:.85rem;color:#d6d3d1}.hdr-m strong{color:#fff}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center}
+.modal-ov.hide{display:none}
+.modal{background:#fff;border-radius:var(--rl);padding:2.5rem;max-width:480px;width:90%;box-shadow:0 10px 15px rgba(0,0,0,.08)}
+.modal h2{font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;margin-bottom:.5rem}
+.modal p{color:var(--text2);margin-bottom:1.5rem;font-size:.9rem}
+.modal select,.modal input{width:100%;padding:.75rem 1rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.95rem;margin-bottom:1rem;background:var(--input)}
+.modal select:focus,.modal input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.mbtn{width:100%;padding:.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer}.mbtn:hover{background:var(--accent-h)}.mbtn:disabled{opacity:.5;cursor:not-allowed}
+.app{max-width:1400px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:260px 1fr;gap:1.5rem;min-height:calc(100vh - 60px)}
+.side{position:sticky;top:75px;align-self:start;max-height:calc(100vh - 90px);overflow-y:auto}
+.sbox{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1rem;margin-bottom:1rem}
+.sbox h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem;font-weight:600}
+.pbar{background:#e7e5e4;border-radius:100px;height:6px;overflow:hidden;margin-bottom:.5rem}
+.pfill{height:100%;background:var(--accent);border-radius:100px;transition:width .4s}
+.ptxt{font-size:.8rem;color:var(--text2)}.ptxt strong{color:var(--text)}
+.tlist{display:flex;flex-direction:column;gap:2px}
+.tbtn{display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:.85rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:left}
+.tbtn:hover{background:var(--warm)}.tbtn.act{background:var(--accent-l);color:var(--accent);font-weight:600}
+.tstat{font-size:.75rem;color:var(--muted)}.tstat.done{color:var(--ok)}
+.slist{display:flex;flex-direction:column;gap:2px}
+.sbtn{display:flex;justify-content:space-between;align-items:center;padding:.45rem .75rem;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:.83rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:left}
+.sbtn:hover{background:var(--warm)}.sbtn.act{background:var(--accent-l);color:var(--accent);font-weight:600}
+.sbtn.rev::after{content:'✓';color:var(--ok);font-weight:700;font-size:.8rem}
+.sbtn.sub::after{content:'✓✓';color:var(--accent);font-weight:700;font-size:.7rem}
+.late-b{background:var(--err-l);color:var(--err);font-size:.65rem;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:4px}
+.main{min-width:0}
+.empty{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:4rem 2rem;text-align:center;color:var(--muted)}
+.empty h3{font-family:'Instrument Serif',Georgia,serif;font-size:1.3rem;color:var(--text2);margin-bottom:.5rem}
+.shdr{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+.sinfo h2{font-family:'Instrument Serif',Georgia,serif;font-size:1.4rem}
+.smeta{font-size:.85rem;color:var(--text2);margin-top:2px}
+.badges{display:flex;gap:.5rem}
+.badge{padding:.3rem .7rem;border-radius:100px;font-size:.75rem;font-weight:600}
+.badge-late{background:var(--err-l);color:var(--err)}.badge-rev{background:var(--accent-l);color:var(--accent)}
+.rsec,.fsec,.gsec{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1.5rem;margin-bottom:1rem}
+.rsec>h3,.fsec>h3,.gsec>h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem;font-weight:600}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.ritem{border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;position:relative;transition:border-color .2s}
+.ritem:hover{border-color:#d4d4d4}
+.rlbl{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;cursor:help}
+.info-i{width:16px;height:16px;border-radius:50%;background:var(--bg);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
+.scbtns{display:flex;gap:.4rem}
+.scb{flex:1;padding:.35rem 0;border:1px solid var(--bdr);border-radius:6px;background:var(--input);font-family:inherit;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:0}
+.scb:hover{border-color:var(--accent);color:var(--accent)}
+.scb.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.scb.sel.s1{background:var(--err);border-color:var(--err)}.scb.sel.s2{background:var(--warn);border-color:var(--warn)}
+.bdd{margin-top:.75rem}.btog{font-size:.78rem;color:var(--accent);cursor:pointer;border:none;background:none;font-family:inherit;font-weight:500;padding:0}.btog:hover{text-decoration:underline}
+.bopts{display:none;margin-top:.5rem;padding:.5rem;background:var(--warm);border-radius:6px;font-size:.8rem}.bopts.open{display:block}
+.bopt{display:flex;align-items:flex-start;gap:.4rem;padding:.3rem 0}.bopt input{margin-top:3px}.bopt label{cursor:pointer;color:var(--text2);line-height:1.4}
+.rttp{display:none;position:absolute;top:0;width:300px;background:#1c1917;color:#fff;padding:1rem;border-radius:var(--r);font-size:.8rem;line-height:1.5;z-index:50;box-shadow:0 10px 15px rgba(0,0,0,.08)}
+.rttp::after{content:'';position:absolute;top:16px;width:12px;height:12px;background:#1c1917;transform:rotate(45deg)}
+.ritem:nth-child(odd) .rttp{left:calc(100% + 12px);right:auto}.ritem:nth-child(odd) .rttp::after{left:-6px;right:auto}
+.ritem:nth-child(even) .rttp{right:calc(100% + 12px);left:auto}.ritem:nth-child(even) .rttp::after{right:-6px;left:auto}
+.ritem:hover .rttp{display:block}
+.rttp h4{font-size:.85rem;margin-bottom:.5rem;color:#93c5fd}.rttp .sd{margin-bottom:.4rem}.rttp .sn{font-weight:700;color:#93c5fd}
+.fgrid{display:flex;flex-direction:column;gap:.75rem}
+.fcard{border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;background:var(--warm)}
+.fchdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.fabout{font-weight:600;font-size:.9rem}
+.fscores{display:flex;gap:.3rem}.mscore{padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:600;background:var(--accent-l);color:var(--accent)}
+.ffield{margin-bottom:.75rem}.ffield:last-child{margin-bottom:0}
+.ffhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
+.fflbl{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.flbtns{display:flex;gap:.4rem}
+.flb{padding:1px 6px;border:1px solid var(--bdr);border-radius:4px;font-size:.7rem;cursor:pointer;background:#fff;transition:all .15s}
+.flb:hover{border-color:#aaa}.flb.fx{background:#fef3c7;border-color:#f59e0b;color:#b45309}.flb.fn{background:var(--err-l);border-color:var(--err);color:var(--err)}
+.ftxt{font-size:.88rem;color:var(--text2);line-height:1.55}.ftxt.empty{color:var(--muted);font-style:italic}
+.simw{background:var(--warn-l);border:1px solid #f59e0b;border-radius:var(--r);padding:.75rem 1rem;margin-top:.75rem;font-size:.85rem;color:var(--warn);display:none}
+.addcom{width:100%;min-height:60px;padding:.75rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.9rem;resize:vertical;background:var(--input);margin-bottom:.75rem}
+.addcom:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.qtags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.qt{padding:.3rem .65rem;border:1px solid var(--bdr);border-radius:100px;font-family:inherit;font-size:.78rem;cursor:pointer;background:#fff;color:var(--text2);transition:all .15s}
+.qt:hover{border-color:var(--accent);color:var(--accent)}.qt.sel{background:var(--accent-l);border-color:var(--accent);color:var(--accent);font-weight:500}
+.gbtn{padding:.6rem 1.5rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;margin-right:.5rem}.gbtn:hover{background:var(--accent-h)}
+.rebtn{padding:.6rem 1rem;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:var(--r);font-family:inherit;font-size:.85rem;font-weight:500;cursor:pointer}.rebtn:hover{background:var(--accent-l)}
+.gprev{margin-top:1rem;display:none}
+.gprev textarea{width:100%;min-height:160px;padding:1rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.9rem;line-height:1.6;resize:vertical;background:var(--input)}
+.gprev textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.abar{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;position:sticky;bottom:1rem;z-index:50}
+.abtns{display:flex;gap:.5rem}
+.btn{padding:.55rem 1.2rem;border-radius:var(--r);font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent-h)}
+.btn-s{background:var(--ok);color:#fff}.btn-s:hover{background:#166534}
+.btn-o{background:#fff;border-color:var(--bdr);color:var(--text2)}.btn-o:hover{border-color:#aaa;background:var(--warm)}
+.asmsg{font-size:.8rem;color:var(--muted)}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#1c1917;color:#fff;padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:500;z-index:2000;opacity:0;transition:all .3s}
+.toast-warn{background:#92400e;color:#fef3c7}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.exov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center}.exov.show{display:flex}
+.loading{text-align:center;padding:4rem;color:var(--muted);font-size:1.1rem}
+@media(max-width:900px){.app{grid-template-columns:1fr;padding:1rem}.side{position:static;max-height:none}.rgrid{grid-template-columns:1fr}.rttp{display:none!important}}
+</style>
+</head>
+<body>
+<header class="hdr"><div class="hdr-in">
+<div class="hdr-t" id="headerTitle">TBL Peer Feedback <span>Faculty Review Portal</span></div>
+<div class="hdr-m"><span id="facDisp"></span><span id="metaInfo"></span>
+</div></div></header>
+<button id="floatExport" class="float-export" onclick="showExport()" style="display:none">📤 Export CSV</button>
+
+<div class="modal-ov" id="facModal"><div class="modal">
+<h2 id="modalTitle">Welcome</h2>
+<p id="modalSub">Select your name to see your assigned teams.</p>
+<select id="facSel"><option value="">Choose your name...</option></select>
+<button class="mbtn" id="facBtn" disabled onclick="startReview()">Begin Review</button>
+</div></div>
+
+<div class="app">
+<aside class="side">
+<div class="sbox"><h3>Progress</h3><div class="pbar"><div class="pfill" id="pFill" style="width:0%"></div></div>
+<div class="ptxt"><strong id="pCount">0</strong> of <span id="pTotal">0</span> reviewed · <strong id="subCount">0</strong> submitted</div></div>
+<div class="sbox"><h3>Teams</h3><div class="tlist" id="teamList"></div></div>
+<div class="sbox" id="sListSec" style="display:none"><h3>Students — Team <span id="curTeamLbl"></span></h3><div class="slist" id="sList"></div></div>
+</aside>
+<main class="main" id="mainC">
+<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar to review student feedback.</p></div>
+<div id="reviewArea" style="display:none">
+<div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div>
+<div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div>
+<div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div>
+<div class="gsec"><h3>Faculty Feedback Generator</h3>
+<label style="font-size:.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.7rem">(required — at least 1 full sentence)</span></label>
+<textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student (e.g. Morgan demonstrates strong preparation and consistently contributes meaningful observations during team discussions.)..." oninput="validateAddCom();autoSave()"></textarea>
+<div id="addComHint" style="font-size:.7rem;margin-top:.2rem;color:var(--muted)"></div>
+<div class="qtags" id="qTags"></div>
+<div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div>
+<div class="gprev" id="gPrev"><textarea id="gText"></textarea></div>
+</div>
+<div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns">
+<button class="btn btn-o" onclick="copyFb()">📋 Copy</button>
+<button class="btn btn-o" onclick="clearForm()">Clear</button>
+<button class="btn btn-p" onclick="saveRev()">Save Review</button>
+<button class="btn btn-s" onclick="submitRev()">Submit & Next →</button>
+</div></div>
+</div>
+</main></div>
+<div class="toast" id="toast"></div>
+<div class="exov" id="exOv"><div class="modal" style="max-width:560px">
+<h2>Export Reviews</h2><p>Download completed reviews as CSV.</p>
+<div id="exStats" style="margin-bottom:1rem;font-size:.9rem"></div>
+<div id="spSyncStatus" style="display:none;background:#fefce8;border:1px solid #fde047;border-radius:6px;padding:.75rem;margin-bottom:1rem;font-size:.8rem;color:#854d0e"></div>
+<button class="mbtn" style="margin-bottom:.5rem" id="retrySyncBtn" onclick="retrySync()" style="display:none">☁️ Retry SharePoint Sync (unsynced reviews)</button>
+<button class="mbtn" onclick="dlCSV()">📥 Download My Reviews (CSV)</button>
+<div id="adminExport" style="display:none;margin-top:.75rem"><button class="mbtn" style="background:var(--ok)" onclick="dlCombinedCSV()">Download All Faculty Reviews (Admin)</button><div style="font-size:.75rem;color:var(--text2);margin-top:.3rem">Combines all faculty localStorage data into one file</div></div>
+<button class="btn btn-o" style="width:100%;margin-top:.5rem" onclick="hideExport()">Cancel</button>
+</div></div>
+
+<script>
+// ================================================================
+// RUBRIC + TAGS CONFIG (stable across all reviews)
+// ================================================================
+const RUBRIC=[
+{id:'behaviors',label:'Specific Behaviors',tooltip:{title:'Specific Behaviors Cited',good:'She explained the renal pathway step-by-step when I was confused',bad:'She is helpful / Good teammate'},
+behaviors:{
+3:['Cited specific TBL sessions by name','Provided concrete examples of actions observed','Referenced particular moments or discussions','Described observable behaviors clearly','Connected feedback to specific learning outcomes'],
+2:['Gave some examples but lacked detail or context','Mixed specific and generic statements unevenly','Partially developed examples without making them actionable','Could benefit from citing more specific instances','Attempted specificity but remained surface-level'],
+1:['Used only vague generalizations throughout','Provided no specific examples or TBL references','Relied entirely on generic descriptors','Offered feedback that lacked actionable detail','Failed to cite any concrete behaviors']}},
+{id:'tone',label:'Constructive Tone',tooltip:{title:'Constructive Tone',good:'I appreciate how you always come prepared — it would help the team if you shared your notes earlier',bad:'You never share your notes / You are lazy'},
+behaviors:{
+3:['Balanced praise with constructive growth areas','Framed improvements as opportunities, not criticisms','Maintained a supportive and encouraging tone throughout','Offered growth-oriented suggestions that invite action','Used professional and respectful language consistently'],
+2:['Maintained a generally appropriate but occasionally flat tone','Showed constructive intent but executed it unevenly','Provided some feedback that felt perfunctory or rushed','Lacked encouragement when addressing improvement areas','Included praise but could have offered warmer suggestions'],
+1:['Used a tone that came across as dismissive or negative','Delivered feedback that felt like criticism without support','Lacked any constructive framing for improvements','Used language that could discourage the recipient','Adopted an unprofessional, harsh, or flippant tone']}},
+{id:'descriptive',label:'Descriptive vs. Evaluative',tooltip:{title:'Descriptive vs. Evaluative Language',good:'I noticed you often check in with quieter members during discussion',bad:'You are a natural leader (character judgment)'},
+behaviors:{
+3:['Focused consistently on observable actions and behaviors','Used "I noticed/observed" statements effectively','Described the impact of behaviors without passing judgment','Avoided character assessments or personality labels','Clearly separated what was done from who the person is'],
+2:['Mixed descriptive and evaluative language throughout','Included some judgmental or labeling phrasing','Occasionally described character rather than behavior','Applied descriptive framing inconsistently','Could distinguish behavior from personality more clearly'],
+1:['Made direct character judgments rather than describing actions','Used labeling language (e.g., lazy, smart, annoying)','Focused on personality traits rather than observable behavior','Delivered feedback that came across as accusatory or personal','Evaluated the person rather than their actions']}},
+{id:'formatting',label:'Length & Formatting',tooltip:{title:'Length & Formatting Requirements',good:'2-3 substantive sentences per teammate with clear structure',bad:'Single word responses, N/A, or identical text for all teammates'},
+behaviors:{
+3:['Met the 2-3 sentence requirement consistently for all teammates','Submitted complete feedback for every team member','Produced clear, well-organized responses throughout','Provided an appropriate and consistent level of detail','Delivered thorough and substantive work in every submission'],
+2:['Fell slightly under the sentence minimum in some responses','Showed minor inconsistencies in depth across teammates','Developed some responses more thoroughly than others','Met the basics but produced uneven quality overall','Completed the minimums but appeared rushed in some reviews'],
+1:['Did not meet sentence minimums in most reviews','Left feedback missing or incomplete for some teammates','Submitted single-word, N/A, or one-sentence responses','Produced disorganized responses that lacked substance','Demonstrated minimal effort across submissions']}}
+];
+const TAGS=['specific examples','thoughtful observations','constructive suggestions','detailed feedback','needs more specificity','too brief','vague language','excellent tone','judgmental language','good use of I-statements','missing improvement suggestions','strong engagement','minimal effort','copied/similar feedback'];
+
+// ================================================================
+// STATE
+// ================================================================
+let CONFIG=null,DATA=null,curFac=null,curTeam=null,curStudent=null,assignedTeams=[],filtStudents=[],storKey='',genSeed=0;
+
+// ================================================================
+// INIT — Load config.json and data.json
+// ================================================================
+async function init(){
+document.getElementById('mainC').innerHTML='<div class="loading">Loading review data...</div>';
+try{
+const[cfgR,datR]=await Promise.all([fetch('config.json'),fetch('data.json')]);
+if(!cfgR.ok||!datR.ok)throw new Error('Failed to load files');
+CONFIG=await cfgR.json();DATA=await datR.json();
+document.getElementById('headerTitle').innerHTML=CONFIG.title+' <span>'+CONFIG.subtitle+'</span>';
+document.getElementById('modalTitle').textContent=CONFIG.subtitle||'Welcome';
+document.getElementById('modalSub').textContent='Select your name to see your assigned teams.';
+const sel=document.getElementById('facSel');
+Object.keys(CONFIG.faculty).forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o)});
+sel.addEventListener('change',()=>{document.getElementById('facBtn').disabled=!sel.value});
+// Check URL param
+const p=new URLSearchParams(location.search);
+if(p.get('f')){sel.value=p.get('f');if(sel.value)document.getElementById('facBtn').disabled=false}
+document.getElementById('metaInfo').textContent=DATA.meta.class+' · '+DATA.meta.thread+' · '+DATA.meta.totalStudents+' students';
+document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.7rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.7rem;margin-top:.2rem;color:var(--muted)"></div><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" onclick="copyFb()">📋 Copy</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
+}catch(e){
+document.getElementById('mainC').innerHTML='<div class="loading" style="color:var(--err)">Error loading data: '+e.message+'<br><br>Make sure config.json and data.json are in the same folder as this file.</div>';
+document.getElementById('facModal').classList.add('hide');
+}}
+function startReview(){
+const n=document.getElementById('facSel').value;if(!n)return;
+curFac=n;const cfg=CONFIG.faculty[n];
+storKey='tbl_'+n.replace(/[^a-zA-Z0-9]/g,'_');
+assignedTeams=cfg.teams==='all'?[...new Set(DATA.students.map(s=>s.team))].sort((a,b)=>a-b):cfg.teams;
+document.getElementById('facModal').classList.add('hide');
+document.getElementById('facDisp').innerHTML='<strong>'+n+'</strong>';
+document.getElementById('floatExport').style.display='block';
+renderTeams();updateProgress();
+}
+
+// ================================================================
+// SIDEBAR
+// ================================================================
+function renderTeams(){
+const c=document.getElementById('teamList');c.innerHTML='';
+const saved=getSaved();
+assignedTeams.forEach(t=>{
+const sts=DATA.students.filter(s=>s.team===t);
+const rev=sts.filter(s=>saved[s.email]?.scored).length;
+const b=document.createElement('button');
+b.className='tbtn'+(curTeam===t?' act':'');
+b.innerHTML='Team '+t+'<span class="tstat'+(rev===sts.length?' done':'')+'">'+rev+'/'+sts.length+(rev===sts.length?' ✓':'')+'</span>';
+b.onclick=()=>selTeam(t);c.appendChild(b)});
+}
+function selTeam(t){
+curTeam=t;filtStudents=DATA.students.filter(s=>s.team===t);
+document.getElementById('sListSec').style.display='block';
+document.getElementById('curTeamLbl').textContent=t;
+renderSList();renderTeams();
+const saved=getSaved();
+const first=filtStudents.find(s=>!saved[s.email]?.scored)||filtStudents[0];
+if(first)selStudent(first);
+}
+function renderSList(){
+const c=document.getElementById('sList');c.innerHTML='';const saved=getSaved();
+const hasSP=CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl;
+filtStudents.forEach(s=>{
+const b=document.createElement('button');const d=saved[s.email];
+let cls='sbtn';if(curStudent&&curStudent.email===s.email)cls+=' act';
+if(d?.submitted)cls+=' sub';else if(d?.scored)cls+=' rev';
+let h=firstName(s.name);if(s.late)h+='<span class="late-b">LATE</span>';
+if(d?.submitted&&hasSP){h+=d.spSynced?'<span style="float:right;font-size:.65rem;color:#22c55e" title="Synced to SharePoint">☁️✓</span>':'<span style="float:right;font-size:.65rem;color:#f59e0b" title="Not synced — use Export CSV">⚠️</span>'}
+b.className=cls;b.innerHTML=h;b.onclick=()=>selStudent(s);c.appendChild(b)});
+}
+
+// ================================================================
+// STUDENT LOADING
+// ================================================================
+function selStudent(s){
+if(curStudent)autoSave();curStudent=s;
+// Auto-rotate seed based on student index within team for variation
+const teamStudents=filtStudents.filter(st=>st.team===s.team);
+const studentIdx=teamStudents.findIndex(st=>st.email===s.email);
+genSeed=studentIdx>=0?(studentIdx%4):0;
+document.getElementById('emptyState').style.display='none';
+document.getElementById('reviewArea').style.display='block';
+document.getElementById('sName').textContent=s.name;
+document.getElementById('sMeta').textContent='Team '+s.team+' · '+s.reviewsWritten+' reviews · '+s.email;
+const bg=document.getElementById('sBadges');bg.innerHTML='';
+if(s.late)bg.innerHTML+='<span class="badge badge-late">LATE</span>';
+bg.innerHTML+='<span class="badge badge-rev">'+s.reviewsWritten+' reviews</span>';
+renderRubric();renderFCards();renderQTags();
+document.getElementById('addCom').value='';
+document.getElementById('gPrev').style.display='none';
+document.getElementById('reBtn').style.display='none';
+restoreSaved();renderSList();
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ================================================================
+// RUBRIC
+// ================================================================
+function renderRubric(){
+const g=document.getElementById('rGrid');g.innerHTML='';
+RUBRIC.forEach(cat=>{
+const d=document.createElement('div');d.className='ritem';
+let ttp='<div class="rttp"><h4>'+cat.tooltip.title+'</h4><div class="sd"><span class="sn">3 Meets:</span> '+cat.behaviors[3][0]+'</div><div class="sd"><span class="sn">2 Somewhat:</span> '+cat.behaviors[2][0]+'</div><div class="sd"><span class="sn">1 Does not:</span> '+cat.behaviors[1][0]+'</div><div style="margin-top:8px;border-top:1px solid #444;padding-top:6px"><div style="color:#86efac">✓ '+cat.tooltip.good+'</div><div style="color:#fca5a5">✗ '+cat.tooltip.bad+'</div></div></div>';
+let sb='<div class="scbtns">';
+[1,2,3].forEach(sc=>{sb+='<button class="scb s'+sc+'" data-cat="'+cat.id+'" data-sc="'+sc+'" onclick="setSc(\''+cat.id+'\','+sc+',this)"><span>'+sc+'</span><span style="font-size:.6rem;opacity:.7">'+(sc===3?'Meets':sc===2?'Somewhat':'Does not')+'</span></button>'});sb+='</div>';
+let bh='<div class="bdd" id="bdd_'+cat.id+'"><div class="bopts" data-cat="'+cat.id+'" id="bopts_'+cat.id+'"></div><div class="bcnt" id="bcnt_'+cat.id+'" style="font-size:.7rem;margin-top:.4rem;color:var(--muted)"></div></div>';
+d.innerHTML=ttp+'<div class="rlbl">'+cat.label+' <span class="info-i">?</span></div>'+sb+bh;
+g.appendChild(d)});
+}
+function setSc(cat,sc,btn){
+btn.parentElement.querySelectorAll('.scb').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');
+// Load score-specific behaviors
+const catObj=RUBRIC.find(c=>c.id===cat);if(!catObj)return;
+const opts=catObj.behaviors[sc]||[];
+const container=document.getElementById('bopts_'+cat);
+const saved=getSaved();const savedBehs=saved[curStudent?.email]?.behaviors||[];
+container.innerHTML=opts.map((b,i)=>{const id='b_'+cat+'_'+sc+'_'+i;const chk=savedBehs.includes(b)?'checked':'';
+return'<div class="bopt"><input type="checkbox" id="'+id+'" data-cat="'+cat+'" data-beh="'+esc(b)+'" '+chk+' onchange="updateBehCount(\''+cat+'\');autoSave()"><label for="'+id+'">'+b+'</label></div>'}).join('');
+container.innerHTML+='<div class="bopt" style="margin-top:.4rem;border-top:1px solid var(--bdr);padding-top:.4rem"><label style="font-size:.72rem;color:var(--muted)">Other (specify):</label><textarea class="beh-other" data-cat="'+cat+'" placeholder="Describe other observed behavior..." style="width:100%;min-height:36px;padding:.4rem;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:.78rem;resize:vertical;margin-top:.2rem" oninput="updateBehCount(\''+cat+'\');autoSave()"></textarea></div>';
+container.classList.add('open');
+updateBehCount(cat);autoSave()}
+function updateBehCount(cat){
+const container=document.getElementById('bopts_'+cat);if(!container)return;
+const checked=container.querySelectorAll('input[type=checkbox]:checked').length;
+const other=container.querySelector('.beh-other');
+const otherCount=(other&&other.value.trim().length>0)?1:0;
+const total=checked+otherCount;
+const el=document.getElementById('bcnt_'+cat);
+if(total>=2){el.innerHTML='<span style="color:var(--ok);font-weight:600">✓ '+total+' behaviors selected</span>'}
+else{el.innerHTML='<span style="color:var(--warn);font-weight:600">⚠ '+total+' of 2 minimum — please select at least 2</span>'}
+}
+
+// ================================================================
+// FEEDBACK CARDS
+// ================================================================
+function renderFCards(){
+const g=document.getElementById('fGrid');g.innerHTML='';
+if(!curStudent.feedbackWritten||!curStudent.feedbackWritten.length){g.innerHTML='<div class="ftxt empty">No feedback data available.</div>';return}
+const saved=getSaved();const flags=saved[curStudent.email]?.flags||{};
+curStudent.feedbackWritten.forEach((fb,idx)=>{
+const card=document.createElement('div');card.className='fcard';
+const cf=flags[idx]||{};const abn=firstName(fb.about);
+let sp='';if(fb.scores)fb.scores.forEach(s=>{if(s!==null)sp+='<span class="mscore">'+s+'</span>'});
+let h='<div class="fchdr"><span class="fabout">About: '+abn+'</span><div class="fscores">'+sp+'</div></div>';
+if(fb.valuable&&fb.valuable.trim()&&fb.valuable!=='nan'){
+const ve=cf.valuableExcellent?' fx':'',vn=cf.valuableNeedswork?' fn':'';
+h+='<div class="ffield"><div class="ffhdr"><span class="fflbl">Most Valuable Contribution</span><div class="flbtns"><button class="flb'+ve+'" data-idx="'+idx+'" data-fld="valuable" data-tp="excellent" onclick="togFlag(this)" title="Cite as excellent">⭐</button><button class="flb'+vn+'" data-idx="'+idx+'" data-fld="valuable" data-tp="needswork" onclick="togFlag(this)" title="Cite as needs work">⚠️</button></div></div><div class="ftxt">'+esc(fb.valuable)+'</div></div>'}
+if(fb.improvement&&fb.improvement.trim()&&fb.improvement!=='nan'){
+const ie=cf.improvementExcellent?' fx':'',iw=cf.improvementNeedswork?' fn':'';
+h+='<div class="ffield"><div class="ffhdr"><span class="fflbl">Suggestion for Improvement</span><div class="flbtns"><button class="flb'+ie+'" data-idx="'+idx+'" data-fld="improvement" data-tp="excellent" onclick="togFlag(this)" title="Cite as excellent">⭐</button><button class="flb'+iw+'" data-idx="'+idx+'" data-fld="improvement" data-tp="needswork" onclick="togFlag(this)" title="Cite as needs work">⚠️</button></div></div><div class="ftxt">'+esc(fb.improvement)+'</div></div>'}
+if(fb.explanation&&fb.explanation.trim()&&fb.explanation!=='nan'&&fb.explanation.length>3)
+h+='<div class="ffield"><div class="ffhdr"><span class="fflbl">Explanation for Low Scores</span></div><div class="ftxt">'+esc(fb.explanation)+'</div></div>';
+card.innerHTML=h;g.appendChild(card)});
+checkSim();
+}
+function togFlag(btn){
+const idx=+btn.dataset.idx,fld=btn.dataset.fld,tp=btn.dataset.tp;
+const fk=fld+(tp==='excellent'?'Excellent':'Needswork'),ok=fld+(tp==='excellent'?'Needswork':'Excellent');
+const saved=getSaved();if(!saved[curStudent.email])saved[curStudent.email]={};
+if(!saved[curStudent.email].flags)saved[curStudent.email].flags={};
+if(!saved[curStudent.email].flags[idx])saved[curStudent.email].flags[idx]={};
+const cur=saved[curStudent.email].flags[idx][fk]||false;
+saved[curStudent.email].flags[idx][fk]=!cur;if(!cur)saved[curStudent.email].flags[idx][ok]=false;
+setSaved(saved);
+if(!cur){btn.classList.add(tp==='excellent'?'fx':'fn');const sib=btn.parentElement.querySelector('[data-tp="'+(tp==='excellent'?'needswork':'excellent')+'"]');if(sib)sib.classList.remove('fx','fn')}
+else btn.classList.remove('fx','fn');
+}
+function checkSim(){
+if(!curStudent.feedbackWritten||curStudent.feedbackWritten.length<2)return;
+const txts=curStudent.feedbackWritten.map(f=>((f.valuable||'')+' '+(f.improvement||'')).toLowerCase().trim()).filter(t=>t.length>10);
+let mx=0,pr=[];
+for(let i=0;i<txts.length;i++)for(let j=i+1;j<txts.length;j++){const s=simCalc(txts[i],txts[j]);if(s>mx){mx=s;pr=[i,j]}}
+const w=document.getElementById('simWarn');
+if(mx>=.5){const n1=firstName(curStudent.feedbackWritten[pr[0]].about),n2=firstName(curStudent.feedbackWritten[pr[1]].about);
+w.textContent='⚠️ High similarity ('+Math.round(mx*100)+'%) between feedback about '+n1+' and '+n2+'. May indicate copied responses.';w.style.display='block'}
+else w.style.display='none';
+}
+function simCalc(a,b){const wa=a.split(/\s+/),wb=b.split(/\s+/);const sa=new Set(wa),sb=new Set(wb);const ix=[...sa].filter(w=>sb.has(w));return ix.length/new Set([...sa,...sb]).size}
+
+// ================================================================
+// QUICK TAGS
+// ================================================================
+function renderQTags(){const c=document.getElementById('qTags');c.innerHTML='';
+TAGS.forEach(t=>{const b=document.createElement('button');b.className='qt';b.textContent=t;b.onclick=()=>{b.classList.toggle('sel');autoSave()};c.appendChild(b)})}
+
+// ================================================================
+// FEEDBACK GENERATION
+// ================================================================
+function validateAddCom(){
+const add=document.getElementById('addCom').value.trim();
+const hint=document.getElementById('addComHint');
+if(!hint)return false;
+if(!add||add.length<15){hint.innerHTML='<span style="color:var(--err)">⚠ Please write at least one full sentence.</span>';return false}
+const hasPunc=/[.!?]/.test(add);
+const wordCount=add.split(/\s+/).length;
+if(wordCount<4||!hasPunc){hint.innerHTML='<span style="color:var(--warn)">⚠ Please write a complete sentence (subject + verb + punctuation).</span>';return false}
+// Check for duplicate/copied observations within this team
+const dupCheck=checkDuplicateObs(add);
+if(dupCheck){hint.innerHTML='<span style="color:var(--err)">⚠ This observation appears very similar to your comment for '+dupCheck+'. Please write a unique observation for each student.</span>';return false}
+hint.innerHTML='<span style="color:var(--ok)">✓ Ready</span>';return true}
+function checkDuplicateObs(text){
+if(!curStudent)return null;
+const saved=getSaved();const norm=t=>t.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim();
+const curNorm=norm(text);if(curNorm.length<20)return null;
+const teamStudents=filtStudents.filter(s=>s.team===curStudent.team&&s.email!==curStudent.email);
+for(const s of teamStudents){
+const r=saved[s.email];if(!r||!r.addCom)continue;
+const prevNorm=norm(r.addCom);if(prevNorm.length<20)continue;
+// Check similarity — shared words as percentage
+const curWords=new Set(curNorm.split(' '));const prevWords=new Set(prevNorm.split(' '));
+let shared=0;curWords.forEach(w=>{if(prevWords.has(w)&&w.length>3)shared++});
+const simScore=shared/Math.max(curWords.size,prevWords.size);
+if(simScore>=0.55)return firstName(s.name);
+// Also check exact substring match (copy-paste)
+if(curNorm.includes(prevNorm)||prevNorm.includes(curNorm))return firstName(s.name);
+}
+return null}
+function genFb(){if(!curStudent)return;
+if(!validateAddCom()){document.getElementById('addCom').focus();toast('Please add at least one full sentence of faculty observations');return}
+const sc=getScores(),tot=Object.values(sc).reduce((a,b)=>a+(b||0),0),behs=getBehs(),tags=getTags(),add=document.getElementById('addCom').value.trim();
+const saved=getSaved(),flags=saved[curStudent.email]?.flags||{};
+const fn=firstName(curStudent.name);let ex=[],nw=[];
+Object.keys(flags).forEach(idx=>{const fb=curStudent.feedbackWritten[+idx];if(!fb)return;const f=flags[idx],an=firstName(fb.about);
+if(f.valuableExcellent&&fb.valuable)ex.push({field:'valuable contribution',about:an,text:fb.valuable});
+if(f.improvementExcellent&&fb.improvement)ex.push({field:'improvement suggestion',about:an,text:fb.improvement});
+if(f.valuableNeedswork&&fb.valuable)nw.push({field:'valuable contribution',about:an,text:fb.valuable});
+if(f.improvementNeedswork&&fb.improvement)nw.push({field:'improvement suggestion',about:an,text:fb.improvement})});
+const text=buildFb(fn,sc,tot,behs,tags,add,ex,nw);
+document.getElementById('gText').value=text;
+document.getElementById('gPrev').style.display='block';
+document.getElementById('reBtn').style.display='inline-block';autoSave()}
+function regenFb(){genSeed=(genSeed+1)%4;genFb();toast('Variation '+(genSeed+1)+' of 4')}
+function wrapComment(txt,fn,sd){
+const trimmed=txt.trim();if(!trimmed)return'';
+const endsP=/[.!?]$/.test(trimmed);
+const startsC=/^[A-Z]/.test(trimmed);
+const words=trimmed.split(/\s+/).length;
+// Multiple sentences — use as-is
+if((trimmed.match(/[.!?]/g)||[]).length>=2)return trimmed;
+// Starts with student name or pronoun + has verb — full sentence
+const nameStart=new RegExp('^('+fn.split(' ')[0]+'|He|She|They|This student|Their)\\b','i').test(trimmed);
+const hasSubjVerb=/^[A-Z][a-z]+\s+(is|are|was|has|had|does|did|shows|demonstrates|needs|lacks|provides|writes|tends|appears|seems|excels|struggles|maintains|displays|exhibits|continues|consistently|also|notably|frequently|often|rarely|sometimes|always|never)\b/i.test(trimmed);
+if(startsC&&(nameStart||hasSubjVerb)&&words>=5)return endsP?trimmed:trimmed+'.';
+// Short phrase — weave naturally with verb if needed
+const f=fn.split(' ')[0];const lower=trimmed.charAt(0).toLowerCase()+trimmed.slice(1);
+const clean=lower.replace(/[.!?]+$/,'');
+const startsVerb=/^(is|are|was|were|has|had|have|does|did|shows?|demonstrated?|needs?|lacks?|could|can|should|would|tends?|appears?|seems?|excels?|struggles?|maintains?|displays?|exhibits?|continues?|provided?|provides?|wrote|writes?|used|uses?|made|makes?|gave|gives?|took|takes?|came|comes?|went|goes?|failed|submitted?|missed|included?|received?|offered|cited|referenced?|described|focused|avoided|balanced|framed|met|attempted|relied|mixed|created|noted|showed|achieved|delivered|produced|presented|expressed|applied|reflected|addressed|identified|recognized|acknowledged|overlooked|neglected|omitted|repeated|copied|varied|improved|maintained|exceeded|fell|lacked|missed|skipped|rushed|completed|finished|started|began|tried|managed|handled|approached|engaged|participated|contributed|supported|helped|hindered|limited|restricted|expanded|developed|grew|declined|increased|decreased|remained|stayed|kept|followed|ignored|disregarded|respected|violated|upheld|practiced|adopted|rejected|embraced|resisted|welcomed|dismissed|encouraged|discouraged|praised|criticized|complimented|challenged|questioned|accepted|denied|admitted|claimed|argued|suggested|recommended|proposed|requested|demanded|insisted|asserted|stated|mentioned|indicated|revealed|concealed|hid|shared|withheld|distributed|contributed|allocated|assigned|delegated|deferred|initiated|prompted|motivated|inspired|influenced|impacted|affected|facilitated|obstructed|enabled|prevented|promoted|suppressed|always|never|often|rarely|sometimes|frequently|consistently|generally|typically|usually|occasionally|seldom|routinely)\b/i.test(clean);
+const startsAdj=/^(a |an |the |very |really |quite |extremely |fairly |particularly |especially |highly |somewhat )/i.test(clean);
+const phr=startsVerb?clean:startsAdj?'is '+clean:/^[aeiou]/i.test(clean)?'is an '+clean:'is a '+clean;
+const templates=['Additionally, '+f+' '+phr+'.','It is also worth noting that '+f+' '+phr+'.','In particular, '+f+' '+phr+'.','Notably, '+f+' '+phr+'.'];
+return templates[sd];
+}
+function buildFb(fn,sc,tot,behs,tags,add,ex,nw){
+const rc=curStudent.reviewsWritten,sd=genSeed,tm=curStudent.team;
+const name=fn;
+// Secondary seed from student name hash for extra variation within teams
+let nh=0;for(let i=0;i<curStudent.name.length;i++)nh=((nh<<5)-nh)+curStudent.name.charCodeAt(i);
+const sd2=Math.abs(nh)%4;const sd3=Math.abs(nh*7)%4;
+
+// Collect strength behaviors (from score=3 categories) and improvement behaviors (from score 1-2)
+let strBehs=[],impBehs=[];
+RUBRIC.forEach(cat=>{
+const s=sc[cat.id];if(!s)return;
+const container=document.getElementById('bopts_'+cat.id);if(!container)return;
+const checked=[];container.querySelectorAll('input[type=checkbox]:checked').forEach(cb=>checked.push(cb.dataset.beh));
+const other=container.querySelector('.beh-other');
+if(other&&other.value.trim())checked.push(other.value.trim());
+if(s===3)strBehs.push(...checked.map(b=>({cat:cat.label,text:b})));
+else impBehs.push(...checked.map(b=>({cat:cat.label,text:b,score:s})));
+});
+
+// ============ OPENING ============
+const openings=[
+name+', thank you for completing your '+rc+' peer reviews for Team '+tm+'. ',
+name+', your '+rc+' peer feedback submissions for Team '+tm+' have been reviewed. ',
+name+' (Team '+tm+'), thank you for submitting your '+rc+' peer reviews this thread. ',
+name+', we have reviewed your '+rc+' peer review submissions for Team '+tm+'. ',
+name+', we appreciate your effort in completing '+rc+' peer reviews for Team '+tm+'. ',
+'Thank you, '+name+', for your '+rc+' peer review submissions for Team '+tm+'. '
+];
+let t=openings[sd<openings.length?sd:sd%openings.length];
+
+// ============ STRENGTHS PARAGRAPH ============
+if(strBehs.length>0||ex.length>0){
+t+='\n\n';
+const strStarts=['Strengths: ','What you did well: ','Areas of strength: ','Strong points in your feedback: ','Highlights from your reviews: ','What stood out positively: '];
+t+=strStarts[sd2%strStarts.length];
+// Behavior-based strengths
+if(strBehs.length>0){
+const grouped={};strBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(b.text.charAt(0).toLowerCase()+b.text.slice(1))});
+const catConnectors=[['In ','Regarding ','For ','Within '],['you ','your feedback shows that you ','your reviews demonstrate that you ','we observed that you ']];
+const catPhrases=Object.entries(grouped).map(([cat,items],ci)=>{
+const joined=items.length===1?items[0]:items.slice(0,-1).join(', ')+' and '+items[items.length-1];
+const pre=catConnectors[0][(sd2+ci)%4];
+const verb=catConnectors[1][(sd3+ci)%4];
+return pre+cat+', '+verb+joined
+});
+t+=catPhrases.join('. ')+'. ';
+}
+// Flagged excellent examples with full quotes
+if(ex.length>0){
+const exStarts=['For example, ','As an illustration of this, ','This is evident in ','To highlight this, ','A strong example is ','Notably, '];
+ex.forEach((e,i)=>{
+if(i===0)t+=exStarts[sd3%exStarts.length]+'your '+e.field+' about '+e.about+', where you wrote: "'+e.text+'" ';
+else t+=['Similarly, ','Likewise, ','In the same vein, ','Also, '][i%4]+'your '+e.field+' about '+e.about+' stated: "'+e.text+'" ';
+});
+t+=['This kind of specific, actionable feedback helps your teammates grow.','This demonstrates the thoughtfulness that makes peer feedback valuable.','This level of detail gives your teammates clear direction for development.','Feedback like this is exactly what helps peers understand their impact.','This specificity is what elevates peer feedback from routine to meaningful.','This shows genuine engagement with your teammates\' development.'][sd2%6]+' ';
+}
+}
+
+// ============ IMPROVEMENTS PARAGRAPH ============
+if(impBehs.length>0||nw.length>0){
+t+='\n\n';
+const impStarts=['Areas for improvement: ','To strengthen your feedback going forward: ','Growth opportunities: ','Where to focus next: ','Suggestions for future reviews: ','Room for development: '];
+t+=impStarts[sd3%impStarts.length];
+if(impBehs.length>0){
+const grouped={};impBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(b.text.charAt(0).toLowerCase()+b.text.slice(1))});
+const impConnectors=[['For ','In ','Regarding ','Looking at '],['you ','your reviews show that you ','we noticed that you ','your feedback indicates you ']];
+const catPhrases=Object.entries(grouped).map(([cat,items],ci)=>{
+const joined=items.length===1?items[0]:items.slice(0,-1).join(', ')+' and '+items[items.length-1];
+const pre=impConnectors[0][(sd3+ci)%4];
+const verb=impConnectors[1][(sd2+ci)%4];
+return pre+cat+', '+verb+joined
+});
+t+=catPhrases.join('. ')+'. ';
+}
+// Flagged needs-work examples with full quotes
+if(nw.length>0){
+const nwStarts=['For instance, ','As an example, ','To illustrate, ','Consider ','Specifically, ','One area to note: '];
+nw.forEach((e,i)=>{
+if(i===0)t+=nwStarts[sd2%nwStarts.length]+'your '+e.field+' about '+e.about+' — "'+e.text+'" — '+['could be strengthened with more specific behavioral observations and context.','would benefit from concrete examples tied to specific TBL sessions or moments.','needs more detail about what you actually observed to be actionable for your teammate.','would be more helpful with specific references to actions rather than general impressions.','could be improved by describing observable behaviors rather than offering general statements.','would carry more weight with references to particular discussions or contributions.'][sd3%6]+' ';
+else t+=['Likewise, ','Similarly, ','In addition, ','Also, '][i%4]+'your '+e.field+' about '+e.about+' ("'+e.text+'") could use more depth. ';
+});
+}
+}
+
+// ============ FACULTY OBSERVATIONS ============
+if(add){
+const cleaned=add.replace(/\s+$/,'');
+const addText=/[.!?]$/.test(cleaned)?cleaned:cleaned+'.';
+t+='\n\nAdditional feedback: '+addText;
+}
+
+// ============ SIMILARITY WARNING ============
+if(tags.includes('copied/similar feedback'))t+='\n\n'+['We also noted that some of your feedback appeared very similar across teammates. Each team member deserves individualized observations that reflect their unique contributions.','Additionally, we observed that several of your reviews contained nearly identical language. Tailoring your feedback to each individual teammate would make it more meaningful.','It is worth noting that some reviews appeared to be duplicated. Taking the time to write unique observations for each teammate strengthens the value of your feedback.','We noticed overlap in the language used across your reviews. Each teammate contributes differently, and your feedback should reflect those differences.'][sd2%4]+' ';
+
+// ============ CLOSING ============
+t+='\n\n';
+const highClose=['Your peer feedback reflects a strong commitment to your teammates and the TBL process. Keep up this level of thoughtful engagement in future threads.','The quality of your feedback shows that you take your role in supporting your teammates seriously. Continue this caliber of work going forward.','Your reviews demonstrate excellent engagement with the peer feedback process. Maintain this standard as you continue through the program.','Thank you for the care you put into providing meaningful feedback. Your teammates benefit from this level of investment.','Your thoughtful approach to peer feedback contributes meaningfully to your team. We look forward to seeing this continue.','This level of engagement with the peer review process is commendable. Your teammates are fortunate to receive such considered feedback.'];
+const midClose=['You are on the right track with your peer feedback. With more attention to the areas noted above, your reviews will become even more valuable to your teammates in future threads.','Your feedback shows a solid foundation. Building on the suggestions above will help you provide even more impactful reviews going forward.','Keep building on this foundation — with focused effort on the growth areas identified above, your feedback will become a stronger tool for team development.','Good work overall. Focus on the improvement areas noted above to elevate your peer feedback in the next review cycle.','There is a good base here to build upon. Addressing the suggestions above will help your reviews have a greater impact on your teammates.','Your effort is noted and appreciated. Continued attention to the areas highlighted above will strengthen your feedback in future threads.'];
+const lowClose=['We encourage you to review the peer feedback rubric carefully and invest more effort in providing specific, descriptive, and constructive feedback. Your teammates rely on your observations to understand how they can improve, and more detailed reviews will benefit the entire team.','Peer feedback is a critical part of the TBL process, and taking the time to provide thoughtful, specific observations supports everyone on your team. Please review the rubric criteria and aim for more substantive engagement in the next thread.','Strong peer feedback describes what you observed, when it occurred, and offers constructive suggestions for growth. We encourage you to put more time into crafting reviews that give your teammates actionable insights.','Your feedback needs significant improvement to meet expectations. Please dedicate more time and attention to future reviews — your teammates deserve specific, constructive observations that help them develop as team members.'];
+if(tot>=10)t+=highClose[(sd+sd2)%highClose.length];
+else if(tot>=7)t+=midClose[(sd+sd2)%midClose.length];
+else t+=lowClose[(sd+sd2)%lowClose.length];
+
+return t.replace(/  +/g,' ').trim()}
+
+// ================================================================
+// SAVE / LOAD
+// ================================================================
+function getSaved(){try{return JSON.parse(localStorage.getItem(storKey)||'{}')}catch{return{}}}
+function setSaved(d){localStorage.setItem(storKey,JSON.stringify(d))}
+function autoSave(){if(!curStudent)return;const d=getSaved();if(!d[curStudent.email])d[curStudent.email]={};
+const sc=getScores(),behs=getBehs(),tags=getTags();
+Object.assign(d[curStudent.email],{scores:sc,behaviors:behs,tags:tags,addCom:document.getElementById('addCom').value,genText:document.getElementById('gText').value,scored:Object.values(sc).some(s=>s>0)});
+setSaved(d);document.getElementById('asMsg').textContent='Auto-saved '+new Date().toLocaleTimeString();updateProgress()}
+function restoreSaved(){const d=getSaved(),s=d[curStudent.email];if(!s)return;
+if(s.scores)Object.entries(s.scores).forEach(([c,v])=>{if(v){const b=document.querySelector('.scb[data-cat="'+c+'"][data-sc="'+v+'"]');if(b){b.classList.add('sel');setSc(c,v,b)}}});
+if(s.tags)document.querySelectorAll('.qt').forEach(t=>{if(s.tags.includes(t.textContent))t.classList.add('sel')});
+if(s.addCom)document.getElementById('addCom').value=s.addCom;
+if(s.genText){document.getElementById('gText').value=s.genText;document.getElementById('gPrev').style.display='block';document.getElementById('reBtn').style.display='inline-block'}}
+function saveRev(){autoSave();toast('✓ Review saved')}
+// ================================================================
+// SHAREPOINT INTEGRATION
+// ================================================================
+let spDigest='',spDigestTime=0;
+async function getSpDigest(){
+if(!CONFIG.sharepoint)return null;
+const now=Date.now();
+if(spDigest&&(now-spDigestTime)<1500000)return spDigest;// cache 25min
+try{
+const r=await fetch(CONFIG.sharepoint.siteUrl+'/_api/contextinfo',{method:'POST',headers:{'Accept':'application/json;odata=verbose'},credentials:'include'});
+if(!r.ok)return null;
+const d=await r.json();spDigest=d.d.GetContextWebInformation.FormDigestValue;spDigestTime=now;return spDigest;
+}catch(e){console.warn('SP digest failed:',e);return null}}
+
+async function postToSharePoint(studentData){
+const digest=await getSpDigest();
+if(!digest){console.warn('No SP digest — falling back to local');return false}
+const sp=CONFIG.sharepoint;
+const body={
+'__metadata':{'type':'SP.Data.TBL_Faculty_SubmissionsListItem'},
+'Title':studentData.name,
+'StudentName':studentData.name,
+'StudentEmail':studentData.email,
+'Team':studentData.team,
+'Thread':CONFIG.thread||'',
+'BehaviorsScore':studentData.scores.behaviors||0,
+'ToneScore':studentData.scores.tone||0,
+'DescriptiveScore':studentData.scores.descriptive||0,
+'FormattingScore':studentData.scores.formatting||0,
+'QualTotal':studentData.qualTotal||0,
+'FacultyComments':studentData.feedback,
+'ReviewedBy':curFac,
+'ReviewedByEmail':CONFIG.faculty[curFac]?.email||''};
+try{
+const r=await fetch(sp.siteUrl+"/_api/web/lists/getbytitle('"+sp.listName+"')/items",{
+method:'POST',headers:{'Accept':'application/json;odata=verbose','Content-Type':'application/json;odata=verbose','X-RequestDigest':digest},
+credentials:'include',body:JSON.stringify(body)});
+if(r.ok){return true}
+const err=await r.text();console.warn('SP post failed:',r.status,err);
+// If metadata type is wrong, try without it
+if(err.includes('type')){
+delete body['__metadata'];
+const r2=await fetch(sp.siteUrl+"/_api/web/lists/getbytitle('"+sp.listName+"')/items",{
+method:'POST',headers:{'Accept':'application/json;odata=nometadata','Content-Type':'application/json;odata=nometadata','X-RequestDigest':digest},
+credentials:'include',body:JSON.stringify(body)});
+if(r2.ok)return true;
+}
+return false;
+}catch(e){console.warn('SP error:',e);return false}}
+
+async function submitRev(){autoSave();const d=getSaved(),fb=document.getElementById('gText').value.trim();
+if(!fb){toast('Generate or write feedback before submitting');return}
+const sc=getScores(),tot=Object.values(sc).reduce((a,b)=>a+(b||0),0);
+d[curStudent.email].submitted=true;d[curStudent.email].submittedAt=new Date().toISOString();
+d[curStudent.email].submittedBy=curFac;d[curStudent.email].finalFb=fb;setSaved(d);
+// Attempt SharePoint submission
+const submitBtn=document.querySelector('.btn-s');
+if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='⏳ Submitting...'}
+let spOk=false;
+if(CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl){
+spOk=await postToSharePoint({name:curStudent.name,email:curStudent.email,team:curStudent.team,
+scores:sc,qualTotal:tot,feedback:fb});
+}
+if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Submit & Next →'}
+if(spOk){
+d[curStudent.email].spSynced=true;setSaved(d);
+toast('✓ Submitted to SharePoint — '+firstName(curStudent.name));
+}else if(CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl){
+d[curStudent.email].spSynced=false;setSaved(d);
+toast('✓ Saved locally (SharePoint offline — use Export CSV)','warn');
+}else{
+toast('✓ Submitted — '+firstName(curStudent.name));
+}
+const next=filtStudents.find(s=>!d[s.email]?.submitted&&s.email!==curStudent.email);
+updateProgress();renderSList();renderTeams();
+if(next)setTimeout(()=>selStudent(next),300);else toast('All students in Team '+curTeam+' submitted!')}
+function clearForm(){if(!curStudent||!confirm('Clear all data for '+curStudent.name+'?'))return;
+const d=getSaved();delete d[curStudent.email];setSaved(d);selStudent(curStudent);toast('Form cleared')}
+function copyFb(){const t=document.getElementById('gText').value;if(!t.trim()){toast('No feedback to copy');return}
+navigator.clipboard.writeText(t).then(()=>toast('✓ Copied to clipboard')).catch(()=>{document.getElementById('gText').select();document.execCommand('copy');toast('✓ Copied')})}
+
+// ================================================================
+// PROGRESS
+// ================================================================
+function updateProgress(){const d=getSaved(),my=DATA.students.filter(s=>assignedTeams.includes(s.team));
+const rev=my.filter(s=>d[s.email]?.scored).length,sub=my.filter(s=>d[s.email]?.submitted).length,tot=my.length;
+document.getElementById('pFill').style.width=(tot?rev/tot*100:0)+'%';
+document.getElementById('pCount').textContent=rev;document.getElementById('pTotal').textContent=tot;
+document.getElementById('subCount').textContent=sub}
+
+// ================================================================
+// EXPORT
+// ================================================================
+function showExport(){const d=getSaved(),my=DATA.students.filter(s=>assignedTeams.includes(s.team));
+const sub=my.filter(s=>d[s.email]?.submitted),rev=my.filter(s=>d[s.email]?.scored);
+const hasSP=CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl;
+const synced=sub.filter(s=>d[s.email]?.spSynced);
+const unsynced=sub.filter(s=>d[s.email]?.submitted&&!d[s.email]?.spSynced);
+document.getElementById('exStats').innerHTML='<strong>'+sub.length+'</strong> submitted / <strong>'+rev.length+'</strong> reviewed / <strong>'+my.length+'</strong> total';
+const spEl=document.getElementById('spSyncStatus');const retryBtn=document.getElementById('retrySyncBtn');
+if(hasSP&&sub.length>0){
+spEl.style.display='block';
+if(unsynced.length>0){
+spEl.style.background='#fefce8';spEl.style.borderColor='#fde047';spEl.style.color='#854d0e';
+spEl.innerHTML='☁️ <strong>'+synced.length+'</strong> of <strong>'+sub.length+'</strong> synced to SharePoint. <strong>'+unsynced.length+'</strong> pending — click Retry below or use CSV export as backup.';
+retryBtn.style.display='block';
+}else{
+spEl.style.background='#dcfce7';spEl.style.borderColor='#86efac';spEl.style.color='#166534';
+spEl.innerHTML='☁️✓ All <strong>'+sub.length+'</strong> submissions synced to SharePoint successfully.';
+retryBtn.style.display='none';
+}}else{spEl.style.display='none';retryBtn.style.display='none'}
+const isAdmin=CONFIG.faculty[curFac]?.teams==='all';
+document.getElementById('adminExport').style.display=isAdmin?'block':'none';
+document.getElementById('exOv').classList.add('show')}
+function hideExport(){document.getElementById('exOv').classList.remove('show')}
+async function retrySync(){
+const d=getSaved();const my=DATA.students.filter(s=>assignedTeams.includes(s.team));
+const unsynced=my.filter(s=>d[s.email]?.submitted&&!d[s.email]?.spSynced);
+if(!unsynced.length){toast('All submissions already synced');return}
+toast('Retrying '+unsynced.length+' submissions...');
+let ok=0;
+for(const s of unsynced){
+const r=d[s.email];const sc=r.scores||{};
+const success=await postToSharePoint({name:s.name,email:s.email,team:s.team,
+scores:sc,qualTotal:Object.values(sc).reduce((a,b)=>a+(b||0),0),feedback:r.finalFb||r.genText||''});
+if(success){d[s.email].spSynced=true;ok++}}
+setSaved(d);renderSList();
+toast('✓ Synced '+ok+' of '+unsynced.length+' submissions');
+showExport()}
+function dlCSV(){const d=getSaved(),my=DATA.students.filter(s=>assignedTeams.includes(s.team));
+// Match MS Forms Faculty Review Portal export format exactly
+const hdr='ID,Start time,Completion time,Email,Name,For which Thread are you submitting reviews?,What is the Team\'s TBL number?,Is this a Blue Group or Gold Group student member?,Which Blue team member are you reviewing?,blue - Are specific behaviors clearly described?,blue - Are content and tone constructive and helpful?,blue - Is the feedback descriptive rather than evaluative?,blue- Are formatting requirements met?,blue - Please write at least 1-2 sentences of narrative feedback for this student\'s work.,Do you have additional students to review?,Which GOLD team member are you reviewing?,gold - Are specific behaviors clearly described?,gold - Are content and tone constructive and helpful?,gold - Is the feedback descriptive rather than evaluative?,gold- Are formatting requirements met?,gold - Please write at least 1-2 sentences of narrative feedback for this student\'s work.,Do you have additional students to review?2,Last modified time';
+let csv=hdr+'\n';let rowId=1000;
+const facEmail=CONFIG.faculty[curFac]?.email||'';
+const thread=CONFIG.thread||DATA.meta.thread||'Thread 4';
+my.forEach((s,i)=>{const r=d[s.email];if(!r||!r.submitted)return;const sc=r.scores||{};
+const b=sc.behaviors||0,t=sc.tone||0,de=sc.descriptive||0,f=sc.formatting||0;
+const fb=((r.finalFb||r.genText||'').replace(/"/g,'""')).replace(/\n/g,' ');
+const now=r.submittedAt||new Date().toISOString();
+const ts=now.replace('T',' ').replace(/\.\d+Z?$/,'');
+const isBlue=s.group==='Blue';const isLast=i===my.length-1;
+const moreReviews=isLast?'No':'Yes';
+rowId++;
+if(isBlue){
+csv+=rowId+',"'+ts+'","'+ts+'","'+facEmail+'","'+(curFac||'')+'","'+thread+'",'+s.team+',"Blue (Teams 1-18)","'+s.email+'",'+b+','+t+','+de+','+f+',"'+fb+'","'+moreReviews+'",,,,,,,"'+ts+'"\n';
+}else{
+csv+=rowId+',"'+ts+'","'+ts+'","'+facEmail+'","'+(curFac||'')+'","'+thread+'",'+s.team+',"Gold (Team 19-36)",,,,,,"'+moreReviews+'","'+s.email+'",'+b+','+t+','+de+','+f+',"'+fb+'",,"'+ts+'"\n';
+}});
+const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='TBL_Faculty_Reviews_'+(curFac||'').replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.csv';
+a.click();URL.revokeObjectURL(url);hideExport();toast('✓ CSV downloaded (Forms-compatible format)')}
+function dlCombinedCSV(){
+// Admin export: scan all faculty localStorage keys and combine
+const hdr='ID,Start time,Completion time,Email,Name,For which Thread are you submitting reviews?,What is the Team\'s TBL number?,Is this a Blue Group or Gold Group student member?,Which Blue team member are you reviewing?,blue - Are specific behaviors clearly described?,blue - Are content and tone constructive and helpful?,blue - Is the feedback descriptive rather than evaluative?,blue- Are formatting requirements met?,blue - Please write at least 1-2 sentences of narrative feedback for this student\'s work.,Do you have additional students to review?,Which GOLD team member are you reviewing?,gold - Are specific behaviors clearly described?,gold - Are content and tone constructive and helpful?,gold - Is the feedback descriptive rather than evaluative?,gold- Are formatting requirements met?,gold - Please write at least 1-2 sentences of narrative feedback for this student\'s work.,Do you have additional students to review?2,Last modified time';
+let csv=hdr+'\n';let rowId=1000;let totalRows=0;
+const thread=CONFIG.thread||DATA.meta.thread||'Thread 4';
+Object.entries(CONFIG.faculty).forEach(([facName,facCfg])=>{
+if(facCfg.teams==='all')return;
+const key='tbl_'+facName.replace(/[^a-zA-Z0-9]/g,'_');
+let fd;try{fd=JSON.parse(localStorage.getItem(key)||'{}')}catch{return}
+const facEmail=facCfg.email||'';
+const facTeams=facCfg.teams;
+const facStudents=DATA.students.filter(s=>facTeams.includes(s.team));
+facStudents.forEach((s,i)=>{const r=fd[s.email];if(!r||!r.submitted)return;const sc=r.scores||{};
+const b=sc.behaviors||0,t=sc.tone||0,de=sc.descriptive||0,f=sc.formatting||0;
+const fb=((r.finalFb||r.genText||'').replace(/"/g,'""')).replace(/\n/g,' ');
+const now=r.submittedAt||new Date().toISOString();
+const ts=now.replace('T',' ').replace(/\.\d+Z?$/,'');
+const isBlue=s.group==='Blue';
+rowId++;totalRows++;
+if(isBlue){csv+=rowId+',"'+ts+'","'+ts+'","'+facEmail+'","'+facName+'","'+thread+'",'+s.team+',"Blue (Teams 1-18)","'+s.email+'",'+b+','+t+','+de+','+f+',"'+fb+'","Yes",,,,,,,"'+ts+'"\n'}
+else{csv+=rowId+',"'+ts+'","'+ts+'","'+facEmail+'","'+facName+'","'+thread+'",'+s.team+',"Gold (Team 19-36)",,,,,,"Yes","'+s.email+'",'+b+','+t+','+de+','+f+',"'+fb+'",,"'+ts+'"\n'}
+})});
+if(totalRows===0){toast('No submitted reviews found across faculty');return}
+const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='TBL_All_Faculty_Reviews_'+new Date().toISOString().slice(0,10)+'.csv';
+a.click();URL.revokeObjectURL(url);hideExport();toast('✓ Combined CSV: '+totalRows+' reviews from all faculty')}
+
+// ================================================================
+// HELPERS
+// ================================================================
+function firstName(n){if(!n)return'Unknown';if(n.includes('@')){const p=n.split('@')[0].split('.');return p[0][0].toUpperCase()+p[0].slice(1)}return n.split(' ')[0]}
+function esc(t){if(!t)return'';const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+function getScores(){const sc={};RUBRIC.forEach(c=>{const s=document.querySelector('.scb.sel[data-cat="'+c.id+'"]');sc[c.id]=s?+s.dataset.sc:0});return sc}
+function getBehs(){const b=[];document.querySelectorAll('.bopts input[type=checkbox]:checked').forEach(c=>{if(c.dataset.beh)b.push(c.dataset.beh)});
+document.querySelectorAll('.beh-other').forEach(ta=>{if(ta.value.trim())b.push(ta.value.trim())});return b}
+function getTags(){const t=[];document.querySelectorAll('.qt.sel').forEach(b=>t.push(b.textContent));return t}
+function toast(m,type){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(type==='warn'?' toast-warn':'');setTimeout(()=>t.className='toast',3000)}
+
+init();
+</script>
+</body>
+</html>

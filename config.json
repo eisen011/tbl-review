@@ -1,0 +1,86 @@
+{
+  "title": "TBL Peer Feedback Faculty Review Portal",
+  "subtitle": "Class of 2028 \u2014 Thread 4",
+  "thread": "Thread 4",
+  "sharepoint": {
+    "siteUrl": "https://rocketsutoledo.sharepoint.com/sites/UTCOMLSMedicalEducationTeamBasedLearning",
+    "listName": "TBL_Faculty_Submissions"
+  },
+  "faculty": {
+    "Faculty 1": {
+      "teams": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "email": "faculty1@rockets.utoledo.edu"
+    },
+    "Faculty 2": {
+      "teams": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "email": "faculty2@rockets.utoledo.edu"
+    },
+    "Faculty 3": {
+      "teams": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "email": "faculty3@rockets.utoledo.edu"
+    },
+    "Faculty 4": {
+      "teams": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "email": "faculty4@rockets.utoledo.edu"
+    },
+    "Faculty 5": {
+      "teams": [
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "email": "faculty5@rockets.utoledo.edu"
+    },
+    "Faculty 6": {
+      "teams": [
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "email": "faculty6@rockets.utoledo.edu"
+    },
+    "Faculty 7": {
+      "teams": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "email": "faculty7@rockets.utoledo.edu"
+    },
+    "Dr. Kate (Admin)": {
+      "teams": "all",
+      "email": "keisenm@rockets.utoledo.edu"
+    }
+  }
+}
