@@ -4,103 +4,103 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TBL Faculty Review Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 :root{--bg:#f5f4f0;--card:#fff;--warm:#faf9f6;--input:#f8f8f6;--text:#1c1917;--text2:#57534e;--muted:#a8a29e;--accent:#1e40af;--accent-h:#1e3a8a;--accent-l:#dbeafe;--ok:#15803d;--ok-l:#dcfce7;--warn:#b45309;--warn-l:#fef3c7;--err:#dc2626;--err-l:#fee2e2;--bdr:#e7e5e4;--r:8px;--rl:12px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
-.float-export{position:fixed;bottom:1.5rem;right:1.5rem;z-index:99;background:#2563eb;color:#fff;border:none;padding:.65rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:all .2s;font-family:inherit}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;font-size:16px}
+.float-export{position:fixed;bottom:1.5rem;right:1.5rem;z-index:99;background:#2563eb;color:#fff;border:none;padding:.65rem 1.2rem;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:all .2s;font-family:inherit}
 .float-export:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
 .hdr{background:#1c1917;color:#fff;padding:.75rem 2rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .hdr-in{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-.hdr-t{font-family:'Instrument Serif',Georgia,serif;font-size:1.3rem}.hdr-t span{color:#93c5fd}
-.hdr-m{display:flex;gap:1.5rem;align-items:center;font-size:.85rem;color:#d6d3d1}.hdr-m strong{color:#fff}
+.hdr-t{font-family:Arial,Helvetica,sans-serif;font-size:1.5rem;font-weight:700}.hdr-t span{color:#93c5fd}
+.hdr-m{display:flex;gap:1.5rem;align-items:center;font-size:.95rem;color:#d6d3d1}.hdr-m strong{color:#fff}
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center}
 .modal-ov.hide{display:none}
 .modal{background:#fff;border-radius:var(--rl);padding:2.5rem;max-width:480px;width:90%;box-shadow:0 10px 15px rgba(0,0,0,.08)}
-.modal h2{font-family:'Instrument Serif',Georgia,serif;font-size:1.5rem;margin-bottom:.5rem}
-.modal p{color:var(--text2);margin-bottom:1.5rem;font-size:.9rem}
-.modal select,.modal input{width:100%;padding:.75rem 1rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.95rem;margin-bottom:1rem;background:var(--input)}
+.modal h2{font-family:Arial,Helvetica,sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
+.modal p{color:var(--text2);margin-bottom:1.5rem;font-size:1rem}
+.modal select,.modal input{width:100%;padding:.75rem 1rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:1rem;margin-bottom:1rem;background:var(--input)}
 .modal select:focus,.modal input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
-.mbtn{width:100%;padding:.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer}.mbtn:hover{background:var(--accent-h)}.mbtn:disabled{opacity:.5;cursor:not-allowed}
+.mbtn{width:100%;padding:.75rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer}.mbtn:hover{background:var(--accent-h)}.mbtn:disabled{opacity:.5;cursor:not-allowed}
 .app{max-width:1400px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:260px 1fr;gap:1.5rem;min-height:calc(100vh - 60px)}
 .side{position:sticky;top:75px;align-self:start;max-height:calc(100vh - 90px);overflow-y:auto}
 .sbox{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1rem;margin-bottom:1rem}
-.sbox h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem;font-weight:600}
+.sbox h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem;font-weight:600}
 .pbar{background:#e7e5e4;border-radius:100px;height:6px;overflow:hidden;margin-bottom:.5rem}
 .pfill{height:100%;background:var(--accent);border-radius:100px;transition:width .4s}
-.ptxt{font-size:.8rem;color:var(--text2)}.ptxt strong{color:var(--text)}
+.ptxt{font-size:.9rem;color:var(--text2)}.ptxt strong{color:var(--text)}
 .tlist{display:flex;flex-direction:column;gap:2px}
-.tbtn{display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:.85rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:left}
+.tbtn{display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:.95rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:left}
 .tbtn:hover{background:var(--warm)}.tbtn.act{background:var(--accent-l);color:var(--accent);font-weight:600}
-.tstat{font-size:.75rem;color:var(--muted)}.tstat.done{color:var(--ok)}
+.tstat{font-size:.85rem;color:var(--muted)}.tstat.done{color:var(--ok)}
 .slist{display:flex;flex-direction:column;gap:2px}
-.sbtn{display:flex;justify-content:space-between;align-items:center;padding:.45rem .75rem;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:.83rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:left}
+.sbtn{display:flex;justify-content:space-between;align-items:center;padding:.45rem .75rem;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:.93rem;cursor:pointer;transition:all .15s;color:var(--text);text-align:left}
 .sbtn:hover{background:var(--warm)}.sbtn.act{background:var(--accent-l);color:var(--accent);font-weight:600}
 .sbtn.rev::after{content:'✓';color:var(--ok);font-weight:700;font-size:.8rem}
 .sbtn.sub::after{content:'✓✓';color:var(--accent);font-weight:700;font-size:.7rem}
-.late-b{background:var(--err-l);color:var(--err);font-size:.65rem;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:4px}
+.late-b{background:var(--err-l);color:var(--err);font-size:.75rem;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:4px}
 .main{min-width:0}
 .empty{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:4rem 2rem;text-align:center;color:var(--muted)}
-.empty h3{font-family:'Instrument Serif',Georgia,serif;font-size:1.3rem;color:var(--text2);margin-bottom:.5rem}
+.empty h3{font-family:Arial,Helvetica,sans-serif;font-size:1.4rem;font-weight:700;color:var(--text2);margin-bottom:.5rem}
 .shdr{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
-.sinfo h2{font-family:'Instrument Serif',Georgia,serif;font-size:1.4rem}
-.smeta{font-size:.85rem;color:var(--text2);margin-top:2px}
+.sinfo h2{font-family:Arial,Helvetica,sans-serif;font-size:1.5rem;font-weight:700}
+.smeta{font-size:.95rem;color:var(--text2);margin-top:2px}
 .badges{display:flex;gap:.5rem}
-.badge{padding:.3rem .7rem;border-radius:100px;font-size:.75rem;font-weight:600}
+.badge{padding:.3rem .7rem;border-radius:100px;font-size:.85rem;font-weight:600}
 .badge-late{background:var(--err-l);color:var(--err)}.badge-rev{background:var(--accent-l);color:var(--accent)}
 .rsec,.fsec,.gsec{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1.5rem;margin-bottom:1rem}
-.rsec>h3,.fsec>h3,.gsec>h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem;font-weight:600}
+.rsec>h3,.fsec>h3,.gsec>h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem;font-weight:600}
 .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .ritem{border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;position:relative;transition:border-color .2s}
 .ritem:hover{border-color:#d4d4d4}
-.rlbl{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;cursor:help}
+.rlbl{font-size:.95rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;cursor:help}
 .info-i{width:16px;height:16px;border-radius:50%;background:var(--bg);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
 .scbtns{display:flex;gap:.4rem}
-.scb{flex:1;padding:.35rem 0;border:1px solid var(--bdr);border-radius:6px;background:var(--input);font-family:inherit;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:0}
+.scb{flex:1;padding:.35rem 0;border:1px solid var(--bdr);border-radius:6px;background:var(--input);font-family:inherit;font-size:1rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:0}
 .scb:hover{border-color:var(--accent);color:var(--accent)}
 .scb.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
 .scb.sel.s1{background:var(--err);border-color:var(--err)}.scb.sel.s2{background:var(--warn);border-color:var(--warn)}
-.bdd{margin-top:.75rem}.btog{font-size:.78rem;color:var(--accent);cursor:pointer;border:none;background:none;font-family:inherit;font-weight:500;padding:0}.btog:hover{text-decoration:underline}
-.bopts{display:none;margin-top:.5rem;padding:.5rem;background:var(--warm);border-radius:6px;font-size:.8rem}.bopts.open{display:block}
+.bdd{margin-top:.75rem}.btog{font-size:.88rem;color:var(--accent);cursor:pointer;border:none;background:none;font-family:inherit;font-weight:500;padding:0}.btog:hover{text-decoration:underline}
+.bopts{display:none;margin-top:.5rem;padding:.5rem;background:var(--warm);border-radius:6px;font-size:.9rem}.bopts.open{display:block}
 .bopt{display:flex;align-items:flex-start;gap:.4rem;padding:.3rem 0}.bopt input{margin-top:3px}.bopt label{cursor:pointer;color:var(--text2);line-height:1.4}
-.rttp{display:none;position:absolute;top:0;width:300px;background:#1c1917;color:#fff;padding:1rem;border-radius:var(--r);font-size:.8rem;line-height:1.5;z-index:50;box-shadow:0 10px 15px rgba(0,0,0,.08)}
+.rttp{display:none;position:absolute;top:0;width:300px;background:#1c1917;color:#fff;padding:1rem;border-radius:var(--r);font-size:.9rem;line-height:1.5;z-index:50;box-shadow:0 10px 15px rgba(0,0,0,.08)}
 .rttp::after{content:'';position:absolute;top:16px;width:12px;height:12px;background:#1c1917;transform:rotate(45deg)}
 .ritem:nth-child(odd) .rttp{left:calc(100% + 12px);right:auto}.ritem:nth-child(odd) .rttp::after{left:-6px;right:auto}
 .ritem:nth-child(even) .rttp{right:calc(100% + 12px);left:auto}.ritem:nth-child(even) .rttp::after{right:-6px;left:auto}
 .ritem:hover .rttp{display:block}
-.rttp h4{font-size:.85rem;margin-bottom:.5rem;color:#93c5fd}.rttp .sd{margin-bottom:.4rem}.rttp .sn{font-weight:700;color:#93c5fd}
+.rttp h4{font-size:.95rem;margin-bottom:.5rem;color:#93c5fd}.rttp .sd{margin-bottom:.4rem}.rttp .sn{font-weight:700;color:#93c5fd}
 .fgrid{display:flex;flex-direction:column;gap:.75rem}
 .fcard{border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;background:var(--warm)}
 .fchdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
-.fabout{font-weight:600;font-size:.9rem}
-.fscores{display:flex;gap:.3rem}.mscore{padding:1px 6px;border-radius:4px;font-size:.7rem;font-weight:600;background:var(--accent-l);color:var(--accent)}
+.fabout{font-weight:600;font-size:1rem}
+.fscores{display:flex;gap:.3rem}.mscore{padding:1px 6px;border-radius:4px;font-size:.8rem;font-weight:600;background:var(--accent-l);color:var(--accent)}
 .ffield{margin-bottom:.75rem}.ffield:last-child{margin-bottom:0}
 .ffhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
-.fflbl{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.fflbl{font-size:.85rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .flbtns{display:flex;gap:.4rem}
-.flb{padding:1px 6px;border:1px solid var(--bdr);border-radius:4px;font-size:.7rem;cursor:pointer;background:#fff;transition:all .15s}
+.flb{padding:1px 6px;border:1px solid var(--bdr);border-radius:4px;font-size:.8rem;cursor:pointer;background:#fff;transition:all .15s}
 .flb:hover{border-color:#aaa}.flb.fx{background:#fef3c7;border-color:#f59e0b;color:#b45309}.flb.fn{background:var(--err-l);border-color:var(--err);color:var(--err)}
-.ftxt{font-size:.88rem;color:var(--text2);line-height:1.55}.ftxt.empty{color:var(--muted);font-style:italic}
-.simw{background:var(--warn-l);border:1px solid #f59e0b;border-radius:var(--r);padding:.75rem 1rem;margin-top:.75rem;font-size:.85rem;color:var(--warn);display:none}
-.addcom{width:100%;min-height:60px;padding:.75rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.9rem;resize:vertical;background:var(--input);margin-bottom:.75rem}
+.ftxt{font-size:.98rem;color:var(--text2);line-height:1.55}.ftxt.empty{color:var(--muted);font-style:italic}
+.simw{background:var(--warn-l);border:1px solid #f59e0b;border-radius:var(--r);padding:.75rem 1rem;margin-top:.75rem;font-size:.95rem;color:var(--warn);display:none}
+.addcom{width:100%;min-height:60px;padding:.75rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:1rem;resize:vertical;background:var(--input);margin-bottom:.75rem}
 .addcom:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
 .qtags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
-.qt{padding:.3rem .65rem;border:1px solid var(--bdr);border-radius:100px;font-family:inherit;font-size:.78rem;cursor:pointer;background:#fff;color:var(--text2);transition:all .15s}
+.qt{padding:.3rem .65rem;border:1px solid var(--bdr);border-radius:100px;font-family:inherit;font-size:.88rem;cursor:pointer;background:#fff;color:var(--text2);transition:all .15s}
 .qt:hover{border-color:var(--accent);color:var(--accent)}.qt.sel{background:var(--accent-l);border-color:var(--accent);color:var(--accent);font-weight:500}
-.gbtn{padding:.6rem 1.5rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;margin-right:.5rem}.gbtn:hover{background:var(--accent-h)}
-.rebtn{padding:.6rem 1rem;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:var(--r);font-family:inherit;font-size:.85rem;font-weight:500;cursor:pointer}.rebtn:hover{background:var(--accent-l)}
+.gbtn{padding:.6rem 1.5rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;margin-right:.5rem}.gbtn:hover{background:var(--accent-h)}
+.rebtn{padding:.6rem 1rem;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:var(--r);font-family:inherit;font-size:.95rem;font-weight:500;cursor:pointer}.rebtn:hover{background:var(--accent-l)}
 .gprev{margin-top:1rem;display:none}
-.gprev textarea{width:100%;min-height:160px;padding:1rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.9rem;line-height:1.6;resize:vertical;background:var(--input)}
+.gprev textarea{width:100%;min-height:160px;padding:1rem;border:1px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:1rem;line-height:1.6;resize:vertical;background:var(--input)}
 .gprev textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
 .abar{background:var(--card);border-radius:var(--rl);border:1px solid var(--bdr);padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;position:sticky;bottom:1rem;z-index:50}
 .abtns{display:flex;gap:.5rem}
-.btn{padding:.55rem 1.2rem;border-radius:var(--r);font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.btn{padding:.55rem 1.2rem;border-radius:var(--r);font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s}
 .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent-h)}
 .btn-s{background:var(--ok);color:#fff}.btn-s:hover{background:#166534}
 .btn-o{background:#fff;border-color:var(--bdr);color:var(--text2)}.btn-o:hover{border-color:#aaa;background:var(--warm)}
-.asmsg{font-size:.8rem;color:var(--muted)}
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#1c1917;color:#fff;padding:.75rem 1.5rem;border-radius:100px;font-size:.85rem;font-weight:500;z-index:2000;opacity:0;transition:all .3s}
+.asmsg{font-size:.9rem;color:var(--muted)}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#1c1917;color:#fff;padding:.75rem 1.5rem;border-radius:100px;font-size:.95rem;font-weight:500;z-index:2000;opacity:0;transition:all .3s}
 .toast-warn{background:#92400e;color:#fef3c7}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .exov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center}.exov.show{display:flex}
@@ -136,9 +136,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div>
 <div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div>
 <div class="gsec"><h3>Faculty Feedback Generator</h3>
-<label style="font-size:.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.7rem">(required — at least 1 full sentence)</span></label>
+<label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.8rem">(required — at least 1 full sentence)</span></label>
 <textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student (e.g. Morgan demonstrates strong preparation and consistently contributes meaningful observations during team discussions.)..." oninput="validateAddCom();autoSave()"></textarea>
-<div id="addComHint" style="font-size:.7rem;margin-top:.2rem;color:var(--muted)"></div>
+<div id="addComHint" style="font-size:.8rem;margin-top:.2rem;color:var(--muted)"></div>
 <div class="qtags" id="qTags"></div>
 <div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div>
 <div class="gprev" id="gPrev"><textarea id="gText"></textarea></div>
@@ -158,7 +158,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <div id="spSyncStatus" style="display:none;background:#fefce8;border:1px solid #fde047;border-radius:6px;padding:.75rem;margin-bottom:1rem;font-size:.8rem;color:#854d0e"></div>
 <button class="mbtn" style="margin-bottom:.5rem" id="retrySyncBtn" onclick="retrySync()" style="display:none">☁️ Retry SharePoint Sync (unsynced reviews)</button>
 <button class="mbtn" onclick="dlCSV()">📥 Download My Reviews (CSV)</button>
-<div id="adminExport" style="display:none;margin-top:.75rem"><button class="mbtn" style="background:var(--ok)" onclick="dlCombinedCSV()">Download All Faculty Reviews (Admin)</button><div style="font-size:.75rem;color:var(--text2);margin-top:.3rem">Combines all faculty localStorage data into one file</div></div>
+<div id="adminExport" style="display:none;margin-top:.75rem"><button class="mbtn" style="background:var(--ok)" onclick="dlCombinedCSV()">Download All Faculty Reviews (Admin)</button><div style="font-size:.85rem;color:var(--text2);margin-top:.3rem">Combines all faculty localStorage data into one file</div></div>
 <button class="btn btn-o" style="width:100%;margin-top:.5rem" onclick="hideExport()">Cancel</button>
 </div></div>
 
@@ -214,7 +214,7 @@ sel.addEventListener('change',()=>{document.getElementById('facBtn').disabled=!s
 const p=new URLSearchParams(location.search);
 if(p.get('f')){sel.value=p.get('f');if(sel.value)document.getElementById('facBtn').disabled=false}
 document.getElementById('metaInfo').textContent=DATA.meta.class+' · '+DATA.meta.thread+' · '+DATA.meta.totalStudents+' students';
-document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.7rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.7rem;margin-top:.2rem;color:var(--muted)"></div><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" onclick="copyFb()">📋 Copy</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
+document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.8rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.8rem;margin-top:.2rem;color:var(--muted)"></div><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" onclick="copyFb()">📋 Copy</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
 }catch(e){
 document.getElementById('mainC').innerHTML='<div class="loading" style="color:var(--err)">Error loading data: '+e.message+'<br><br>Make sure config.json and data.json are in the same folder as this file.</div>';
 document.getElementById('facModal').classList.add('hide');
@@ -299,7 +299,7 @@ const d=document.createElement('div');d.className='ritem';
 let ttp='<div class="rttp"><h4>'+cat.tooltip.title+'</h4><div class="sd"><span class="sn">3 Meets:</span> '+cat.behaviors[3][0]+'</div><div class="sd"><span class="sn">2 Somewhat:</span> '+cat.behaviors[2][0]+'</div><div class="sd"><span class="sn">1 Does not:</span> '+cat.behaviors[1][0]+'</div><div style="margin-top:8px;border-top:1px solid #444;padding-top:6px"><div style="color:#86efac">✓ '+cat.tooltip.good+'</div><div style="color:#fca5a5">✗ '+cat.tooltip.bad+'</div></div></div>';
 let sb='<div class="scbtns">';
 [1,2,3].forEach(sc=>{sb+='<button class="scb s'+sc+'" data-cat="'+cat.id+'" data-sc="'+sc+'" onclick="setSc(\''+cat.id+'\','+sc+',this)"><span>'+sc+'</span><span style="font-size:.6rem;opacity:.7">'+(sc===3?'Meets':sc===2?'Somewhat':'Does not')+'</span></button>'});sb+='</div>';
-let bh='<div class="bdd" id="bdd_'+cat.id+'"><div class="bopts" data-cat="'+cat.id+'" id="bopts_'+cat.id+'"></div><div class="bcnt" id="bcnt_'+cat.id+'" style="font-size:.7rem;margin-top:.4rem;color:var(--muted)"></div></div>';
+let bh='<div class="bdd" id="bdd_'+cat.id+'"><div class="bopts" data-cat="'+cat.id+'" id="bopts_'+cat.id+'"></div><div class="bcnt" id="bcnt_'+cat.id+'" style="font-size:.8rem;margin-top:.4rem;color:var(--muted)"></div></div>';
 d.innerHTML=ttp+'<div class="rlbl">'+cat.label+' <span class="info-i">?</span></div>'+sb+bh;
 g.appendChild(d)});
 }
@@ -312,7 +312,7 @@ const container=document.getElementById('bopts_'+cat);
 const saved=getSaved();const savedBehs=saved[curStudent?.email]?.behaviors||[];
 container.innerHTML=opts.map((b,i)=>{const id='b_'+cat+'_'+sc+'_'+i;const chk=savedBehs.includes(b)?'checked':'';
 return'<div class="bopt"><input type="checkbox" id="'+id+'" data-cat="'+cat+'" data-beh="'+esc(b)+'" '+chk+' onchange="updateBehCount(\''+cat+'\');autoSave()"><label for="'+id+'">'+b+'</label></div>'}).join('');
-container.innerHTML+='<div class="bopt" style="margin-top:.4rem;border-top:1px solid var(--bdr);padding-top:.4rem"><label style="font-size:.72rem;color:var(--muted)">Other (specify):</label><textarea class="beh-other" data-cat="'+cat+'" placeholder="Describe other observed behavior..." style="width:100%;min-height:36px;padding:.4rem;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:.78rem;resize:vertical;margin-top:.2rem" oninput="updateBehCount(\''+cat+'\');autoSave()"></textarea></div>';
+container.innerHTML+='<div class="bopt" style="margin-top:.4rem;border-top:1px solid var(--bdr);padding-top:.4rem"><label style="font-size:.82rem;color:var(--muted)">Other (specify):</label><textarea class="beh-other" data-cat="'+cat+'" placeholder="Describe other observed behavior..." style="width:100%;min-height:36px;padding:.4rem;border:1px solid var(--bdr);border-radius:4px;font-family:inherit;font-size:.88rem;resize:vertical;margin-top:.2rem" oninput="updateBehCount(\''+cat+'\');autoSave()"></textarea></div>';
 container.classList.add('open');
 updateBehCount(cat);autoSave()}
 function updateBehCount(cat){
