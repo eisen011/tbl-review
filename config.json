@@ -7,80 +7,72 @@
     "listName": "TBL_Faculty_Submissions"
   },
   "faculty": {
-    "Faculty 1": {
+    "Mary Smith": {
       "teams": [
         1,
         2,
         3,
         4,
         5
-      ],
-      "email": "faculty1@rockets.utoledo.edu"
+      ]
     },
-    "Faculty 2": {
+    "Cathy VanHook": {
       "teams": [
         6,
         7,
         8,
         9,
-        10
-      ],
-      "email": "faculty2@rockets.utoledo.edu"
+        10,
+        11
+      ]
     },
-    "Faculty 3": {
+    "Jeremy Laukka": {
       "teams": [
-        11,
         12,
         13,
-        14
-      ],
-      "email": "faculty3@rockets.utoledo.edu"
-    },
-    "Faculty 4": {
-      "teams": [
+        14,
         15,
-        16,
-        17,
-        18
-      ],
-      "email": "faculty4@rockets.utoledo.edu"
+        16
+      ]
     },
-    "Faculty 5": {
+    "Hamoun Delaviz": {
       "teams": [
+        17,
+        18,
         19,
         20,
-        21,
-        22,
-        23
-      ],
-      "email": "faculty5@rockets.utoledo.edu"
+        21
+      ]
     },
-    "Faculty 6": {
+    "Jolene Miller": {
       "teams": [
+        22,
+        23,
         24,
         25,
-        26,
-        27,
-        28
-      ],
-      "email": "faculty6@rockets.utoledo.edu"
+        26
+      ]
     },
-    "Faculty 7": {
+    "Jason Levine": {
       "teams": [
+        27,
+        28,
         29,
         30,
-        31,
+        31
+      ]
+    },
+    "Kate Eisenmann": {
+      "teams": [
         32,
         33,
         34,
         35,
         36
-      ],
-      "email": "faculty7@rockets.utoledo.edu"
+      ]
     },
     "Dr. Kate (Admin)": {
-      "teams": "all",
-      "email": "keisenm@rockets.utoledo.edu"
+      "teams": "all"
     }
   }
 }
