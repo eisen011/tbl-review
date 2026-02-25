@@ -9,7 +9,7 @@
 :root{--bg:#f5f4f0;--card:#fff;--warm:#faf9f6;--input:#f8f8f6;--text:#1c1917;--text2:#57534e;--muted:#a8a29e;--accent:#1e40af;--accent-h:#1e3a8a;--accent-l:#dbeafe;--ok:#15803d;--ok-l:#dcfce7;--warn:#b45309;--warn-l:#fef3c7;--err:#dc2626;--err-l:#fee2e2;--bdr:#e7e5e4;--r:8px;--rl:12px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;font-size:16px}
-.float-export{position:fixed;bottom:1.5rem;right:1.5rem;z-index:99;background:#2563eb;color:#fff;border:none;padding:.65rem 1.2rem;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:all .2s;font-family:inherit}
+.float-export{position:fixed;bottom:5rem;right:1.5rem;z-index:99;background:#2563eb;color:#fff;border:none;padding:.65rem 1.2rem;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:all .2s;font-family:inherit}
 .float-export:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
 .hdr{background:#1c1917;color:#fff;padding:.75rem 2rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .hdr-in{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
@@ -109,6 +109,33 @@ body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--tex
 </style>
 </head>
 <body>
+<!-- PASSWORD GATE -->
+<div id="pwGate" style="position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:center;justify-content:center">
+<div style="background:#fff;border-radius:12px;padding:2.5rem;max-width:420px;width:90%;box-shadow:0 10px 15px rgba(0,0,0,.08);text-align:center">
+<div style="font-size:2rem;margin-bottom:.75rem">🔒</div>
+<h2 style="font-family:Arial,Helvetica,sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:.5rem">Faculty Access</h2>
+<p style="color:#57534e;margin-bottom:1.5rem;font-size:1rem">Enter the password to access the review portal.</p>
+<input type="password" id="pwInput" placeholder="Enter password..." style="width:100%;padding:.75rem 1rem;border:1px solid #e7e5e4;border-radius:8px;font-family:inherit;font-size:1rem;margin-bottom:.75rem;background:#f8f8f6" onkeydown="if(event.key==='Enter')checkPw()">
+<div id="pwErr" style="color:#dc2626;font-size:.9rem;margin-bottom:.75rem;display:none">Incorrect password. Please try again.</div>
+<button onclick="checkPw()" style="width:100%;padding:.75rem;background:#1e40af;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer">Enter</button>
+</div>
+</div>
+<script>
+function checkPw(){
+const pw=document.getElementById('pwInput').value;
+if(pw==='TBL2028Repro'){
+document.getElementById('pwGate').style.display='none';
+sessionStorage.setItem('tbl_auth','1');
+}else{
+document.getElementById('pwErr').style.display='block';
+document.getElementById('pwInput').value='';
+document.getElementById('pwInput').focus();
+}
+}
+// Auto-pass if already authenticated this session
+if(sessionStorage.getItem('tbl_auth')==='1'){document.addEventListener('DOMContentLoaded',()=>{const g=document.getElementById('pwGate');if(g)g.style.display='none'})}
+</script>
+
 <header class="hdr"><div class="hdr-in">
 <div class="hdr-t" id="headerTitle">TBL Peer Feedback <span>Faculty Review Portal</span></div>
 <div class="hdr-m"><span id="facDisp"></span><span id="metaInfo"></span>
@@ -518,9 +545,14 @@ return alts[Math.abs(seed)%alts.length]}
 function buildFb(fn,sc,tot,behs,tags,add,ex,nw){
 const rc=curStudent.reviewsWritten,sd=genSeed,tm=curStudent.team;
 const name=fn;
-// Secondary seed from student name hash for extra variation within teams
+// Richer student-specific seed: combine name hash, email hash, and team-position index
 let nh=0;for(let i=0;i<curStudent.name.length;i++)nh=((nh<<5)-nh)+curStudent.name.charCodeAt(i);
-const sd2=Math.abs(nh)%4;const sd3=Math.abs(nh*7)%4;
+let eh=0;for(let i=0;i<curStudent.email.length;i++)eh=((eh<<7)-eh)+curStudent.email.charCodeAt(i);
+const posIdx=filtStudents.findIndex(s=>s.email===curStudent.email);
+const combinedHash=Math.abs(nh*31+eh*17+posIdx*53);
+const sd2=combinedHash%6;const sd3=Math.abs(combinedHash*7+nh)%6;const sd4=Math.abs(combinedHash*13+eh)%6;const sd5=Math.abs(combinedHash*19+posIdx*41)%6;
+// Seeded shuffle: deterministically reorder an array based on student seed
+function seededShuffle(arr,seed){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.abs((seed*(i+1)*2654435761)>>0)%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
 
 // Collect strength behaviors (from score=3 categories) and improvement behaviors (from score 1-2)
 let strBehs=[],impBehs=[];
@@ -541,60 +573,66 @@ name+', your '+rc+' peer feedback submissions for Team '+tm+' have been reviewed
 name+' (Team '+tm+'), thank you for submitting your '+rc+' peer reviews this thread. ',
 name+', we have reviewed your '+rc+' peer review submissions for Team '+tm+'. ',
 name+', we appreciate your effort in completing '+rc+' peer reviews for Team '+tm+'. ',
-'Thank you, '+name+', for your '+rc+' peer review submissions for Team '+tm+'. '
+'Thank you, '+name+', for your '+rc+' peer review submissions for Team '+tm+'. ',
+name+', your '+rc+' peer reviews for Team '+tm+' have been evaluated by faculty. ',
+'We have completed our review of your '+rc+' peer feedback submissions, '+name+' (Team '+tm+'). ',
+name+', faculty have reviewed your '+rc+' peer evaluations for Team '+tm+'. ',
+name+' — thank you for submitting '+rc+' peer reviews for your Team '+tm+' colleagues. '
 ];
-let t=openings[sd<openings.length?sd:sd%openings.length];
+let t=openings[(sd+sd2+sd4)%openings.length];
 
 // ============ STRENGTHS PARAGRAPH ============
 if(strBehs.length>0||ex.length>0){
 t+='\n\n';
-const strStarts=['Strengths: ','What you did well: ','Areas of strength: ','Strong points in your feedback: ','Highlights from your reviews: ','What stood out positively: '];
-t+=strStarts[sd2%strStarts.length];
-// Behavior-based strengths
+const strStarts=['Strengths: ','What you did well: ','Areas of strength: ','Strong points in your feedback: ','Highlights from your reviews: ','What stood out positively: ','Commendable aspects of your work: ','Where your feedback excelled: '];
+t+=strStarts[(sd2+sd4)%strStarts.length];
+// Behavior-based strengths — shuffle order per student
 if(strBehs.length>0){
-const grouped={};strBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(paraphrase(b.text,sd2+sd3).charAt(0).toLowerCase()+paraphrase(b.text,sd2+sd3).slice(1))});
-const catConnectors=[['In ','Regarding ','For ','Within '],['you ','your feedback shows that you ','your reviews demonstrate that you ','we observed that you ']];
+const shuffledStr=seededShuffle(strBehs,combinedHash);
+const grouped={};shuffledStr.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(paraphrase(b.text,sd2+sd3+sd5).charAt(0).toLowerCase()+paraphrase(b.text,sd2+sd3+sd5).slice(1))});
+const catConnectors=[['In ','Regarding ','For ','Within ','Across ','In the area of '],['you ','your feedback shows that you ','your reviews demonstrate that you ','we observed that you ','your submissions reflect that you ','it is clear that you ']];
 const catPhrases=Object.entries(grouped).map(([cat,items],ci)=>{
 const joined=items.length===1?items[0]:items.slice(0,-1).join(', ')+' and '+items[items.length-1];
-const pre=catConnectors[0][(sd2+ci)%4];
-const verb=catConnectors[1][(sd3+ci)%4];
+const pre=catConnectors[0][(sd3+sd5+ci)%6];
+const verb=catConnectors[1][(sd4+ci)%6];
 return pre+cat+', '+verb+joined
 });
 t+=catPhrases.join('. ')+'. ';
 }
 // Flagged excellent examples with full quotes
 if(ex.length>0){
-const exStarts=['For example, ','As an illustration of this, ','This is evident in ','To highlight this, ','A strong example is ','Notably, '];
+const exStarts=['For example, ','As an illustration of this, ','This is evident in ','To highlight this, ','A strong example is ','Notably, ','One standout moment: ','This quality shows in '];
 ex.forEach((e,i)=>{
-if(i===0)t+=exStarts[sd3%exStarts.length]+'your '+e.field+' about '+e.about+', where you wrote: "'+e.text+'" ';
-else t+=['Similarly, ','Likewise, ','In the same vein, ','Also, '][i%4]+'your '+e.field+' about '+e.about+' stated: "'+e.text+'" ';
+if(i===0)t+=exStarts[(sd3+sd5)%exStarts.length]+'your '+e.field+' about '+e.about+', where you wrote: "'+e.text+'" ';
+else t+=['Similarly, ','Likewise, ','In the same vein, ','Also, ','Along the same lines, ','Additionally, '][i%6]+'your '+e.field+' about '+e.about+' stated: "'+e.text+'" ';
 });
-t+=['This kind of specific, actionable feedback helps your teammates grow.','This demonstrates the thoughtfulness that makes peer feedback valuable.','This level of detail gives your teammates clear direction for development.','Feedback like this is exactly what helps peers understand their impact.','This specificity is what elevates peer feedback from routine to meaningful.','This shows genuine engagement with your teammates\' development.'][sd2%6]+' ';
+t+=['This kind of specific, actionable feedback helps your teammates grow.','This demonstrates the thoughtfulness that makes peer feedback valuable.','This level of detail gives your teammates clear direction for development.','Feedback like this is exactly what helps peers understand their impact.','This specificity is what elevates peer feedback from routine to meaningful.','This shows genuine engagement with your teammates\' development.','Examples like this make your feedback stand out as particularly useful.','This caliber of observation is what your teammates need to develop.'][(sd2+sd4)%8]+' ';
 }
 }
 
 // ============ IMPROVEMENTS PARAGRAPH ============
 if(impBehs.length>0||nw.length>0){
 t+='\n\n';
-const impStarts=['Areas for improvement: ','To strengthen your feedback going forward: ','Growth opportunities: ','Where to focus next: ','Suggestions for future reviews: ','Room for development: '];
-t+=impStarts[sd3%impStarts.length];
+const impStarts=['Areas for improvement: ','To strengthen your feedback going forward: ','Growth opportunities: ','Where to focus next: ','Suggestions for future reviews: ','Room for development: ','Points to work on: ','How to elevate your feedback: '];
+t+=impStarts[(sd3+sd4)%impStarts.length];
 if(impBehs.length>0){
-const grouped={};impBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(paraphrase(b.text,sd2+sd3).charAt(0).toLowerCase()+paraphrase(b.text,sd2+sd3).slice(1))});
-const impConnectors=[['For ','In ','Regarding ','Looking at '],['you ','your reviews show that you ','we noticed that you ','your feedback indicates you ']];
+const shuffledImp=seededShuffle(impBehs,combinedHash+7);
+const grouped={};shuffledImp.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(paraphrase(b.text,sd2+sd3+sd5).charAt(0).toLowerCase()+paraphrase(b.text,sd2+sd3+sd5).slice(1))});
+const impConnectors=[['For ','In ','Regarding ','Looking at ','In the area of ','Concerning '],['you ','your reviews show that you ','we noticed that you ','your feedback indicates you ','your submissions suggest you ','it appears that you ']];
 const catPhrases=Object.entries(grouped).map(([cat,items],ci)=>{
 const joined=items.length===1?items[0]:items.slice(0,-1).join(', ')+' and '+items[items.length-1];
-const pre=impConnectors[0][(sd3+ci)%4];
-const verb=impConnectors[1][(sd2+ci)%4];
+const pre=impConnectors[0][(sd3+sd5+ci)%6];
+const verb=impConnectors[1][(sd2+sd4+ci)%6];
 return pre+cat+', '+verb+joined
 });
 t+=catPhrases.join('. ')+'. ';
 }
 // Flagged needs-work examples with full quotes
 if(nw.length>0){
-const nwStarts=['For instance, ','As an example, ','To illustrate, ','Consider ','Specifically, ','One area to note: '];
+const nwStarts=['For instance, ','As an example, ','To illustrate, ','Consider ','Specifically, ','One area to note: ','To be more specific, ','A case in point: '];
 nw.forEach((e,i)=>{
-if(i===0)t+=nwStarts[sd2%nwStarts.length]+'your '+e.field+' about '+e.about+' — "'+e.text+'" — '+['could be strengthened with more specific behavioral observations and context.','would benefit from concrete examples tied to specific TBL sessions or moments.','needs more detail about what you actually observed to be actionable for your teammate.','would be more helpful with specific references to actions rather than general impressions.','could be improved by describing observable behaviors rather than offering general statements.','would carry more weight with references to particular discussions or contributions.'][sd3%6]+' ';
-else t+=['Likewise, ','Similarly, ','In addition, ','Also, '][i%4]+'your '+e.field+' about '+e.about+' ("'+e.text+'") could use more depth. ';
+if(i===0)t+=nwStarts[(sd2+sd5)%nwStarts.length]+'your '+e.field+' about '+e.about+' — "'+e.text+'" — '+['could be strengthened with more specific behavioral observations and context.','would benefit from concrete examples tied to specific TBL sessions or moments.','needs more detail about what you actually observed to be actionable for your teammate.','would be more helpful with specific references to actions rather than general impressions.','could be improved by describing observable behaviors rather than offering general statements.','would carry more weight with references to particular discussions or contributions.','lacks the specificity needed for your teammate to take meaningful action.','would be stronger with concrete references to what you observed during sessions.'][(sd3+sd4)%8]+' ';
+else t+=['Likewise, ','Similarly, ','In addition, ','Also, ','Furthermore, ','Along those lines, '][i%6]+'your '+e.field+' about '+e.about+' ("'+e.text+'") could use more depth. ';
 });
 }
 }
@@ -607,16 +645,16 @@ t+='\n\nAdditional feedback: '+addText;
 }
 
 // ============ SIMILARITY WARNING ============
-if(tags.includes('copied/similar feedback'))t+='\n\n'+['We also noted that some of your feedback appeared very similar across teammates. Each team member deserves individualized observations that reflect their unique contributions.','Additionally, we observed that several of your reviews contained nearly identical language. Tailoring your feedback to each individual teammate would make it more meaningful.','It is worth noting that some reviews appeared to be duplicated. Taking the time to write unique observations for each teammate strengthens the value of your feedback.','We noticed overlap in the language used across your reviews. Each teammate contributes differently, and your feedback should reflect those differences.'][sd2%4]+' ';
+if(tags.includes('copied/similar feedback'))t+='\n\n'+['We also noted that some of your feedback appeared very similar across teammates. Each team member deserves individualized observations that reflect their unique contributions.','Additionally, we observed that several of your reviews contained nearly identical language. Tailoring your feedback to each individual teammate would make it more meaningful.','It is worth noting that some reviews appeared to be duplicated. Taking the time to write unique observations for each teammate strengthens the value of your feedback.','We noticed overlap in the language used across your reviews. Each teammate contributes differently, and your feedback should reflect those differences.','Several of your reviews shared very similar wording. Stronger peer feedback distinguishes each teammate based on their individual contributions.','Your reviews showed significant repetition. We encourage you to write distinct observations for each team member in future threads.'][(sd2+sd4)%6]+' ';
 
 // ============ CLOSING ============
 t+='\n\n';
 const highClose=['Your peer feedback reflects a strong commitment to your teammates and the TBL process. Keep up this level of thoughtful engagement in future threads.','The quality of your feedback shows that you take your role in supporting your teammates seriously. Continue this caliber of work going forward.','Your reviews demonstrate excellent engagement with the peer feedback process. Maintain this standard as you continue through the program.','Thank you for the care you put into providing meaningful feedback. Your teammates benefit from this level of investment.','Your thoughtful approach to peer feedback contributes meaningfully to your team. We look forward to seeing this continue.','This level of engagement with the peer review process is commendable. Your teammates are fortunate to receive such considered feedback.'];
 const midClose=['You are on the right track with your peer feedback. With more attention to the areas noted above, your reviews will become even more valuable to your teammates in future threads.','Your feedback shows a solid foundation. Building on the suggestions above will help you provide even more impactful reviews going forward.','Keep building on this foundation — with focused effort on the growth areas identified above, your feedback will become a stronger tool for team development.','Good work overall. Focus on the improvement areas noted above to elevate your peer feedback in the next review cycle.','There is a good base here to build upon. Addressing the suggestions above will help your reviews have a greater impact on your teammates.','Your effort is noted and appreciated. Continued attention to the areas highlighted above will strengthen your feedback in future threads.'];
 const lowClose=['We encourage you to review the peer feedback rubric carefully and invest more effort in providing specific, descriptive, and constructive feedback. Your teammates rely on your observations to understand how they can improve, and more detailed reviews will benefit the entire team.','Peer feedback is a critical part of the TBL process, and taking the time to provide thoughtful, specific observations supports everyone on your team. Please review the rubric criteria and aim for more substantive engagement in the next thread.','Strong peer feedback describes what you observed, when it occurred, and offers constructive suggestions for growth. We encourage you to put more time into crafting reviews that give your teammates actionable insights.','Your feedback needs significant improvement to meet expectations. Please dedicate more time and attention to future reviews — your teammates deserve specific, constructive observations that help them develop as team members.'];
-if(tot>=10)t+=highClose[(sd+sd2)%highClose.length];
-else if(tot>=7)t+=midClose[(sd+sd2)%midClose.length];
-else t+=lowClose[(sd+sd2)%lowClose.length];
+if(tot>=10)t+=highClose[(sd+sd2+sd4)%highClose.length];
+else if(tot>=7)t+=midClose[(sd+sd3+sd5)%midClose.length];
+else t+=lowClose[(sd+sd2+sd3)%lowClose.length];
 
 return t.replace(/  +/g,' ').trim()}
 
