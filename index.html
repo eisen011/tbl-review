@@ -446,6 +446,75 @@ const phr=startsVerb?clean:startsAdj?'is '+clean:/^[aeiou]/i.test(clean)?'is an 
 const templates=['Additionally, '+f+' '+phr+'.','It is also worth noting that '+f+' '+phr+'.','In particular, '+f+' '+phr+'.','Notably, '+f+' '+phr+'.'];
 return templates[sd];
 }
+// Paraphrase variants for behavior text — 3 alternates per behavior, selected by student seed
+const PARA={
+'cited specific tbl sessions by name':['referenced specific TBL activities by name','named particular TBL sessions in your feedback','identified individual TBL sessions explicitly'],
+'provided concrete examples of actions observed':['gave clear, concrete examples of teammate actions','supplied tangible examples of behaviors you witnessed','included real examples of what you saw teammates do'],
+'referenced particular moments or discussions':['pointed to specific discussions or interactions','drew on particular exchanges during sessions','highlighted distinct moments from team activities'],
+'described observable behaviors clearly':['articulated observable behaviors in a clear manner','conveyed teammate actions in specific, observable terms','painted a clear picture of the behaviors you observed'],
+'connected feedback to specific learning outcomes':['tied your observations to relevant learning goals','linked your feedback to concrete educational objectives','related your comments to specific learning outcomes'],
+'gave some examples but lacked detail or context':['offered a few examples, though they could use more depth','included some references but without sufficient context','provided examples that would benefit from additional detail'],
+'mixed specific and generic statements unevenly':['blended specific observations with broader generalizations','alternated between concrete and vague language unevenly','combined detailed and generic commentary inconsistently'],
+'partially developed examples without making them actionable':['started developing examples but stopped short of making them useful','introduced some specifics without fully connecting them to actions','began to cite examples but did not follow through to actionable detail'],
+'could benefit from citing more specific instances':['would be strengthened by referencing additional concrete instances','has room to include more particular examples from sessions','could be improved by grounding observations in more specific moments'],
+'attempted specificity but remained surface-level':['made an effort toward specificity but stayed at a high level','tried to be concrete but the examples lacked depth','aimed for detail but the observations remained general'],
+'used only vague generalizations throughout':['relied on broad, unspecific language across all reviews','wrote in generalities without anchoring feedback in specifics','kept all observations at a vague, nonspecific level'],
+'provided no specific examples or tbl references':['did not include any concrete examples or references to TBL sessions','offered no particular instances or session-specific observations','left out any references to team activities or behaviors'],
+'relied entirely on generic descriptors':['depended solely on generic terms without elaboration','used only stock phrases with no individualized detail','wrote exclusively in general terms that lack specificity'],
+'offered feedback that lacked actionable detail':['produced feedback that does not give teammates a clear path to improve','wrote comments that are difficult for peers to act on','provided observations without enough detail to be useful'],
+'failed to cite any concrete behaviors':['did not identify any particular actions or behaviors','omitted any reference to specific things teammates did','left feedback without any behavioral observations'],
+'balanced praise with constructive growth areas':['combined recognition of strengths with thoughtful suggestions for growth','paired positive observations with areas for development effectively','blended encouragement with constructive guidance'],
+'framed improvements as opportunities, not criticisms':['presented areas for growth as positive opportunities','positioned suggestions constructively rather than critically','cast improvement areas in an encouraging, forward-looking light'],
+'maintained a supportive and encouraging tone throughout':['kept a consistently warm and encouraging voice across all reviews','sustained a positive and supportive approach from start to finish','wrote with a tone that felt genuinely encouraging throughout'],
+'offered growth-oriented suggestions that invite action':['provided forward-looking suggestions that motivate change','gave recommendations oriented toward development','delivered suggestions that encourage teammates to take next steps'],
+'used professional and respectful language consistently':['maintained professionalism and respect in every review','wrote with a consistently courteous and professional voice','kept language appropriate and respectful across all submissions'],
+'maintained a generally appropriate but occasionally flat tone':['kept a mostly suitable tone, though some passages lacked warmth','wrote appropriately overall but certain sections felt monotone','sustained a reasonable tone with occasional dips in engagement'],
+'showed constructive intent but executed it unevenly':['demonstrated good intentions but applied them inconsistently','had the right idea constructively but delivery varied','aimed for constructive feedback but the execution was uneven'],
+'provided some feedback that felt perfunctory or rushed':['included some comments that seemed hastily written','delivered portions of feedback that felt like afterthoughts','wrote some reviews that appeared to lack careful thought'],
+'lacked encouragement when addressing improvement areas':['missed opportunities to frame growth areas positively','could have been more encouraging when pointing out areas to develop','addressed weaknesses without offering supportive framing'],
+'included praise but could have offered warmer suggestions':['recognized strengths but improvement suggestions felt cool','acknowledged positives yet the growth areas needed a gentler touch','praised well but the constructive portions could be more inviting'],
+'used a tone that came across as dismissive or negative':['adopted a tone that readers could perceive as dismissive','wrote in a way that may feel discouraging to the recipient','used language that could come across as indifferent or negative'],
+'delivered feedback that felt like criticism without support':['provided comments that read as criticism without constructive backing','wrote feedback that pointed out flaws without offering a path forward','gave critiques without pairing them with encouragement'],
+'lacked any constructive framing for improvements':['did not frame any improvement areas constructively','offered no positive framing when addressing areas of growth','left growth areas without constructive context or encouragement'],
+'used language that could discourage the recipient':['chose words that risk demotivating the reader','wrote in terms that could undermine confidence','used phrasing that may feel discouraging rather than developmental'],
+'adopted an unprofessional, harsh, or flippant tone':['used language that fell below professional expectations','wrote with a tone that felt dismissive or inappropriately casual','employed phrasing that lacked expected professionalism'],
+'focused consistently on observable actions and behaviors':['kept attention squarely on what teammates did, not who they are','grounded all observations in visible, concrete actions','centered feedback on behaviors rather than traits or personality'],
+'used "i noticed/observed" statements effectively':['employed observational language skillfully throughout','made strong use of firsthand "I noticed" framing','leveraged descriptive "I observed" phrasing to keep feedback objective'],
+'described the impact of behaviors without passing judgment':['conveyed how teammate actions affected the group without being judgmental','explained behavioral impact in neutral, nonjudgmental terms','noted the effects of behaviors without evaluating character'],
+'avoided character assessments or personality labels':['steered clear of personality-based labels or judgments','refrained from making character-level evaluations','kept feedback focused on actions rather than personal attributes'],
+'clearly separated what was done from who the person is':['drew a clear line between behaviors and identity','distinguished actions from character effectively','kept observations about behavior separate from commentary on personality'],
+'mixed descriptive and evaluative language throughout':['alternated between describing actions and making judgments','blended objective observations with some evaluative statements','combined factual descriptions with occasional character-level comments'],
+'included some judgmental or labeling phrasing':['used some language that labels rather than describes','incorporated a few phrases that judge rather than observe','included certain terms that evaluate character instead of behavior'],
+'occasionally described character rather than behavior':['at times commented on who teammates are rather than what they did','sometimes shifted from describing actions to assessing personality','periodically moved from behavioral observations to character commentary'],
+'applied descriptive framing inconsistently':['used descriptive language in some reviews but not others','was inconsistent in maintaining an observational tone','applied the describe-don\'t-evaluate approach unevenly'],
+'could distinguish behavior from personality more clearly':['has room to draw a sharper line between actions and traits','would benefit from more clearly separating what was done from who someone is','could improve at keeping observations behavioral rather than personal'],
+'made direct character judgments rather than describing actions':['assessed character instead of actions','wrote about who people are rather than what they did','made personality-based evaluations rather than behavioral observations'],
+'used labeling language (e.g., lazy, smart, annoying)':['applied personality labels instead of describing behaviors','used trait-based descriptors rather than action-based observations','relied on character labels that evaluate rather than describe'],
+'focused on personality traits rather than observable behavior':['centered comments on personal traits instead of actions','wrote about personality characteristics rather than what was observed','emphasized who teammates are rather than what they contribute'],
+'delivered feedback that came across as accusatory or personal':['wrote feedback that felt directed at the person rather than their actions','produced comments that could be perceived as personal rather than constructive','gave feedback that reads as accusatory rather than developmental'],
+'evaluated the person rather than their actions':['assessed character rather than conduct','judged who teammates are instead of what they did','focused evaluation on personality rather than observable contributions'],
+'met the 2-3 sentence requirement consistently for all teammates':['consistently wrote 2-3 substantive sentences for every teammate','hit the sentence requirement reliably across all reviews','provided the expected length for each and every review'],
+'submitted complete feedback for every team member':['turned in feedback for all teammates without exception','completed reviews for every member of the team','ensured no teammate was left without a review'],
+'produced clear, well-organized responses throughout':['wrote responses that were clear and logically structured','delivered well-organized feedback across all submissions','maintained clarity and structure in every review'],
+'provided an appropriate and consistent level of detail':['included a steady, suitable amount of detail throughout','maintained an even depth of commentary across all reviews','gave each teammate a comparable and appropriate level of attention'],
+'delivered thorough and substantive work in every submission':['produced thoughtful, substantive content in each review','submitted consistently thorough work across all teammates','provided meaningful depth in every individual submission'],
+'fell slightly under the sentence minimum in some responses':['came up a bit short on length in a few reviews','wrote slightly less than the expected minimum in some cases','dipped below the sentence requirement in certain submissions'],
+'showed minor inconsistencies in depth across teammates':['gave some teammates more detailed feedback than others','varied somewhat in how much depth each review received','was slightly uneven in the level of detail across reviews'],
+'developed some responses more thoroughly than others':['invested more effort in certain reviews than in others','gave fuller treatment to some teammates while others received less','produced stronger depth in some submissions compared to others'],
+'met the basics but produced uneven quality overall':['satisfied minimum requirements but quality varied across reviews','hit the floor but the overall consistency could improve','completed the requirements with uneven attention to quality'],
+'completed the minimums but appeared rushed in some reviews':['met the basic expectations though some reviews felt hurried','finished all reviews but certain ones lacked the time they deserved','satisfied requirements but some submissions showed signs of being rushed'],
+'did not meet sentence minimums in most reviews':['fell short of the sentence requirement in the majority of reviews','wrote less than the expected minimum across most submissions','did not reach the 2-3 sentence standard in most cases'],
+'left feedback missing or incomplete for some teammates':['omitted reviews for one or more teammates','did not provide complete feedback for all team members','left some teammates without any review or with incomplete submissions'],
+'submitted single-word, n/a, or one-sentence responses':['turned in responses that were a single word or sentence','provided N/A or minimal one-line answers','submitted responses that do not constitute meaningful feedback'],
+'produced disorganized responses that lacked substance':['wrote responses that were difficult to follow and lacking content','delivered disorganized feedback without substantive observations','produced unfocused reviews that did not provide useful information'],
+'demonstrated minimal effort across submissions':['showed little investment of effort across all reviews','put minimal energy into the peer review process','produced work that reflects limited engagement with the assignment']
+};
+function paraphrase(text,seed){
+const key=text.toLowerCase().replace(/[.!?]+$/,'');
+const alts=PARA[key];
+if(!alts)return text;
+return alts[Math.abs(seed)%alts.length]}
+
 function buildFb(fn,sc,tot,behs,tags,add,ex,nw){
 const rc=curStudent.reviewsWritten,sd=genSeed,tm=curStudent.team;
 const name=fn;
@@ -483,7 +552,7 @@ const strStarts=['Strengths: ','What you did well: ','Areas of strength: ','Stro
 t+=strStarts[sd2%strStarts.length];
 // Behavior-based strengths
 if(strBehs.length>0){
-const grouped={};strBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(b.text.charAt(0).toLowerCase()+b.text.slice(1))});
+const grouped={};strBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(paraphrase(b.text,sd2+sd3).charAt(0).toLowerCase()+paraphrase(b.text,sd2+sd3).slice(1))});
 const catConnectors=[['In ','Regarding ','For ','Within '],['you ','your feedback shows that you ','your reviews demonstrate that you ','we observed that you ']];
 const catPhrases=Object.entries(grouped).map(([cat,items],ci)=>{
 const joined=items.length===1?items[0]:items.slice(0,-1).join(', ')+' and '+items[items.length-1];
@@ -510,7 +579,7 @@ t+='\n\n';
 const impStarts=['Areas for improvement: ','To strengthen your feedback going forward: ','Growth opportunities: ','Where to focus next: ','Suggestions for future reviews: ','Room for development: '];
 t+=impStarts[sd3%impStarts.length];
 if(impBehs.length>0){
-const grouped={};impBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(b.text.charAt(0).toLowerCase()+b.text.slice(1))});
+const grouped={};impBehs.forEach(b=>{if(!grouped[b.cat])grouped[b.cat]=[];grouped[b.cat].push(paraphrase(b.text,sd2+sd3).charAt(0).toLowerCase()+paraphrase(b.text,sd2+sd3).slice(1))});
 const impConnectors=[['For ','In ','Regarding ','Looking at '],['you ','your reviews show that you ','we noticed that you ','your feedback indicates you ']];
 const catPhrases=Object.entries(grouped).map(([cat,items],ci)=>{
 const joined=items.length===1?items[0]:items.slice(0,-1).join(', ')+' and '+items[items.length-1];
