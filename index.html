@@ -9,8 +9,7 @@
 :root{--bg:#f5f4f0;--card:#fff;--warm:#faf9f6;--input:#f8f8f6;--text:#1c1917;--text2:#57534e;--muted:#a8a29e;--accent:#1e40af;--accent-h:#1e3a8a;--accent-l:#dbeafe;--ok:#15803d;--ok-l:#dcfce7;--warn:#b45309;--warn-l:#fef3c7;--err:#dc2626;--err-l:#fee2e2;--bdr:#e7e5e4;--r:8px;--rl:12px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;font-size:16px}
-.float-export{position:fixed;bottom:5rem;left:1.5rem;z-index:99;background:#2563eb;color:#fff;border:none;padding:.65rem 1.2rem;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:all .2s;font-family:inherit}
-.float-export:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
+
 .hdr{background:#1c1917;color:#fff;padding:.75rem 2rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .hdr-in{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
 .hdr-t{font-family:Arial,Helvetica,sans-serif;font-size:1.5rem;font-weight:700}.hdr-t span{color:#93c5fd}
@@ -171,8 +170,7 @@ if(sessionStorage.getItem('tbl_auth')==='1'){document.addEventListener('DOMConte
 <div class="gprev" id="gPrev"><textarea id="gText"></textarea></div>
 </div>
 <div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns">
-<button class="btn btn-o" id="abarExport" onclick="showExport()" style="display:none;background:#2563eb;color:#fff;border-color:#2563eb">📤 Export CSV</button>
-<button class="btn btn-o" onclick="copyFb()">📋 Copy</button>
+<button class="btn btn-o" onclick="showExport()">📤 Export CSV</button>
 <button class="btn btn-o" onclick="clearForm()">Clear</button>
 <button class="btn btn-p" onclick="saveRev()">Save Review</button>
 <button class="btn btn-s" onclick="submitRev()">Submit & Next →</button>
@@ -242,7 +240,7 @@ sel.addEventListener('change',()=>{document.getElementById('facBtn').disabled=!s
 const p=new URLSearchParams(location.search);
 if(p.get('f')){sel.value=p.get('f');if(sel.value)document.getElementById('facBtn').disabled=false}
 document.getElementById('metaInfo').textContent=DATA.meta.class+' · '+DATA.meta.thread+' · '+DATA.meta.totalStudents+' students';
-document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.8rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.8rem;margin-top:.2rem;color:var(--muted)"></div><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.4rem;margin-top:.75rem">Click at least one overall classification below <span style="color:var(--err);font-size:.8rem">(required)</span></label><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" id="abarExport" onclick="showExport()" style="display:none;background:#2563eb;color:#fff;border-color:#2563eb">📤 Export CSV</button><button class="btn btn-o" onclick="copyFb()">📋 Copy</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
+document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.8rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.8rem;margin-top:.2rem;color:var(--muted)"></div><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.4rem;margin-top:.75rem">Click at least one overall classification below <span style="color:var(--err);font-size:.8rem">(required)</span></label><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" onclick="showExport()">📤 Export CSV</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
 }catch(e){
 document.getElementById('mainC').innerHTML='<div class="loading" style="color:var(--err)">Error loading data: '+e.message+'<br><br>Make sure config.json and data.json are in the same folder as this file.</div>';
 document.getElementById('facModal').classList.add('hide');
@@ -254,7 +252,7 @@ storKey='tbl_'+n.replace(/[^a-zA-Z0-9]/g,'_');
 assignedTeams=cfg.teams==='all'?[...new Set(DATA.students.map(s=>s.team))].sort((a,b)=>a-b):cfg.teams;
 document.getElementById('facModal').classList.add('hide');
 document.getElementById('facDisp').innerHTML='<strong>'+n+'</strong>';
-const abarExp=document.getElementById('abarExport');if(abarExp)abarExp.style.display='inline-block';
+
 renderTeams();updateProgress();
 }
 
@@ -283,7 +281,7 @@ if(first)selStudent(first);
 }
 function renderSList(){
 const c=document.getElementById('sList');c.innerHTML='';const saved=getSaved();
-const hasSP=CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl;
+const hasSP=!!PA_URL;
 filtStudents.forEach(s=>{
 const b=document.createElement('button');const d=saved[s.email];
 let cls='sbtn';if(curStudent&&curStudent.email===s.email)cls+=' act';
@@ -675,77 +673,56 @@ if(s.addCom)document.getElementById('addCom').value=s.addCom;
 if(s.genText){document.getElementById('gText').value=s.genText;document.getElementById('gPrev').style.display='block';document.getElementById('reBtn').style.display='inline-block'}}
 function saveRev(){autoSave();toast('✓ Review saved')}
 // ================================================================
-// SHAREPOINT INTEGRATION
+// POWER AUTOMATE INTEGRATION
 // ================================================================
-let spDigest='',spDigestTime=0;
-async function getSpDigest(){
-if(!CONFIG.sharepoint)return null;
-const now=Date.now();
-if(spDigest&&(now-spDigestTime)<1500000)return spDigest;// cache 25min
-try{
-const r=await fetch(CONFIG.sharepoint.siteUrl+'/_api/contextinfo',{method:'POST',headers:{'Accept':'application/json;odata=verbose'},credentials:'include'});
-if(!r.ok)return null;
-const d=await r.json();spDigest=d.d.GetContextWebInformation.FormDigestValue;spDigestTime=now;return spDigest;
-}catch(e){console.warn('SP digest failed:',e);return null}}
+const PA_URL='https://default1d6b1707baa94a3da8f8deabfb3d46.7b.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/489cf04b0b71452289ab0cdedf47cddb/triggers/manual/paths/invoke?api-version=1';
 
 async function postToSharePoint(studentData){
-const digest=await getSpDigest();
-if(!digest){console.warn('No SP digest — falling back to local');return false}
-const sp=CONFIG.sharepoint;
-const body={
-'__metadata':{'type':'SP.Data.TBL_Faculty_SubmissionsListItem'},
-'Title':studentData.name,
-'StudentName':studentData.name,
-'StudentEmail':studentData.email,
-'Team':studentData.team,
-'Thread':CONFIG.thread||'',
-'BehaviorsScore':studentData.scores.behaviors||0,
-'ToneScore':studentData.scores.tone||0,
-'DescriptiveScore':studentData.scores.descriptive||0,
-'FormattingScore':studentData.scores.formatting||0,
-'QualTotal':studentData.qualTotal||0,
-'FacultyComments':studentData.feedback,
-'ReviewedBy':curFac,
-'ReviewedByEmail':CONFIG.faculty[curFac]?.email||''};
 try{
-const r=await fetch(sp.siteUrl+"/_api/web/lists/getbytitle('"+sp.listName+"')/items",{
-method:'POST',headers:{'Accept':'application/json;odata=verbose','Content-Type':'application/json;odata=verbose','X-RequestDigest':digest},
-credentials:'include',body:JSON.stringify(body)});
+const tags=getTags();
+const body={
+studentName:studentData.name,
+studentEmail:studentData.email,
+team:studentData.team,
+thread:CONFIG.thread||'',
+behaviorsScore:studentData.scores.behaviors||0,
+toneScore:studentData.scores.tone||0,
+descriptiveScore:studentData.scores.descriptive||0,
+formattingScore:studentData.scores.formatting||0,
+qualTotal:studentData.qualTotal||0,
+totalScorePct:studentData.qualTotal?Math.round(studentData.qualTotal/12*1000)/10:0,
+facultyComments:studentData.feedback,
+reviewedBy:curFac,
+submittedAt:new Date().toISOString(),
+tags:tags.join(', ')
+};
+const r=await fetch(PA_URL,{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify(body)
+});
 if(r.ok){return true}
-const err=await r.text();console.warn('SP post failed:',r.status,err);
-// If metadata type is wrong, try without it
-if(err.includes('type')){
-delete body['__metadata'];
-const r2=await fetch(sp.siteUrl+"/_api/web/lists/getbytitle('"+sp.listName+"')/items",{
-method:'POST',headers:{'Accept':'application/json;odata=nometadata','Content-Type':'application/json;odata=nometadata','X-RequestDigest':digest},
-credentials:'include',body:JSON.stringify(body)});
-if(r2.ok)return true;
-}
+console.warn('PA post failed:',r.status,await r.text());
 return false;
-}catch(e){console.warn('SP error:',e);return false}}
+}catch(e){console.warn('PA error:',e);return false}}
 
 async function submitRev(){autoSave();const d=getSaved(),fb=document.getElementById('gText').value.trim();
 if(!fb){toast('Generate or write feedback before submitting');return}
 const sc=getScores(),tot=Object.values(sc).reduce((a,b)=>a+(b||0),0);
 d[curStudent.email].submitted=true;d[curStudent.email].submittedAt=new Date().toISOString();
 d[curStudent.email].submittedBy=curFac;d[curStudent.email].finalFb=fb;setSaved(d);
-// Attempt SharePoint submission
+// Submit via Power Automate
 const submitBtn=document.querySelector('.btn-s');
 if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='⏳ Submitting...'}
-let spOk=false;
-if(CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl){
-spOk=await postToSharePoint({name:curStudent.name,email:curStudent.email,team:curStudent.team,
+const spOk=await postToSharePoint({name:curStudent.name,email:curStudent.email,team:curStudent.team,
 scores:sc,qualTotal:tot,feedback:fb});
-}
 if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Submit & Next →'}
 if(spOk){
 d[curStudent.email].spSynced=true;setSaved(d);
 toast('✓ Submitted to SharePoint — '+firstName(curStudent.name));
-}else if(CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl){
-d[curStudent.email].spSynced=false;setSaved(d);
-toast('✓ Saved locally (SharePoint offline — use Export CSV)','warn');
 }else{
-toast('✓ Submitted — '+firstName(curStudent.name));
+d[curStudent.email].spSynced=false;setSaved(d);
+toast('✓ Saved locally (sync failed — use Export CSV as backup)','warn');
 }
 const next=filtStudents.find(s=>!d[s.email]?.submitted&&s.email!==curStudent.email);
 updateProgress();renderSList();renderTeams();
@@ -769,7 +746,7 @@ document.getElementById('subCount').textContent=sub}
 // ================================================================
 function showExport(){const d=getSaved(),my=DATA.students.filter(s=>assignedTeams.includes(s.team));
 const sub=my.filter(s=>d[s.email]?.submitted),rev=my.filter(s=>d[s.email]?.scored);
-const hasSP=CONFIG.sharepoint&&CONFIG.sharepoint.siteUrl;
+const hasSP=!!PA_URL;
 const synced=sub.filter(s=>d[s.email]?.spSynced);
 const unsynced=sub.filter(s=>d[s.email]?.submitted&&!d[s.email]?.spSynced);
 document.getElementById('exStats').innerHTML='<strong>'+sub.length+'</strong> submitted / <strong>'+rev.length+'</strong> reviewed / <strong>'+my.length+'</strong> total';

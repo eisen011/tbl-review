@@ -2,10 +2,6 @@
   "title": "TBL Peer Feedback Faculty Review Portal",
   "subtitle": "Class of 2028 \u2014 Thread 4",
   "thread": "Thread 4",
-  "sharepoint": {
-    "siteUrl": "https://rocketsutoledo.sharepoint.com/sites/UTCOMLSMedicalEducationTeamBasedLearning",
-    "listName": "TBL_Faculty_Submissions"
-  },
   "faculty": {
     "Mary Smith": {
       "teams": [
