@@ -140,7 +140,6 @@ if(sessionStorage.getItem('tbl_auth')==='1'){document.addEventListener('DOMConte
 <div class="hdr-t" id="headerTitle">TBL Peer Feedback <span>Faculty Review Portal</span></div>
 <div class="hdr-m"><span id="facDisp"></span><span id="metaInfo"></span>
 </div></div></header>
-<button id="floatExport" class="float-export" onclick="showExport()" style="display:none">📤 Export CSV</button>
 
 <div class="modal-ov" id="facModal"><div class="modal">
 <h2 id="modalTitle">Welcome</h2>
@@ -172,6 +171,7 @@ if(sessionStorage.getItem('tbl_auth')==='1'){document.addEventListener('DOMConte
 <div class="gprev" id="gPrev"><textarea id="gText"></textarea></div>
 </div>
 <div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns">
+<button class="btn btn-o" id="abarExport" onclick="showExport()" style="display:none;background:#2563eb;color:#fff;border-color:#2563eb">📤 Export CSV</button>
 <button class="btn btn-o" onclick="copyFb()">📋 Copy</button>
 <button class="btn btn-o" onclick="clearForm()">Clear</button>
 <button class="btn btn-p" onclick="saveRev()">Save Review</button>
@@ -242,7 +242,7 @@ sel.addEventListener('change',()=>{document.getElementById('facBtn').disabled=!s
 const p=new URLSearchParams(location.search);
 if(p.get('f')){sel.value=p.get('f');if(sel.value)document.getElementById('facBtn').disabled=false}
 document.getElementById('metaInfo').textContent=DATA.meta.class+' · '+DATA.meta.thread+' · '+DATA.meta.totalStudents+' students';
-document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.8rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.8rem;margin-top:.2rem;color:var(--muted)"></div><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.4rem;margin-top:.75rem">Click at least one overall classification below <span style="color:var(--err);font-size:.8rem">(required)</span></label><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" onclick="copyFb()">📋 Copy</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
+document.getElementById('mainC').innerHTML='<div class="empty" id="emptyState"><h3>Select a team to begin</h3><p>Choose a team from the sidebar.</p></div><div id="reviewArea" style="display:none"><div class="shdr"><div class="sinfo"><h2 id="sName"></h2><div class="smeta" id="sMeta"></div></div><div class="badges" id="sBadges"></div></div><div class="fsec"><h3>Feedback Written by This Student</h3><div class="fgrid" id="fGrid"></div><div class="simw" id="simWarn"></div></div><div class="rsec"><h3>Qualitative Rubric Scoring</h3><div class="rgrid" id="rGrid"></div></div><div class="gsec"><h3>Faculty Feedback Generator</h3><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.3rem">Personalized Faculty Observations <span style="color:var(--err);font-size:.8rem">(required)</span></label><textarea class="addcom" id="addCom" placeholder="Write at least one full sentence about this student..." oninput="validateAddCom();autoSave()"></textarea><div id="addComHint" style="font-size:.8rem;margin-top:.2rem;color:var(--muted)"></div><label style="font-size:.9rem;font-weight:600;color:var(--text);display:block;margin-bottom:.4rem;margin-top:.75rem">Click at least one overall classification below <span style="color:var(--err);font-size:.8rem">(required)</span></label><div class="qtags" id="qTags"></div><div><button class="gbtn" onclick="genFb()">Generate Feedback</button><button class="rebtn" id="reBtn" style="display:none" onclick="regenFb()">🔄 Regenerate</button></div><div class="gprev" id="gPrev"><textarea id="gText"></textarea></div></div><div class="abar"><div class="asmsg" id="asMsg"></div><div class="abtns"><button class="btn btn-o" id="abarExport" onclick="showExport()" style="display:none;background:#2563eb;color:#fff;border-color:#2563eb">📤 Export CSV</button><button class="btn btn-o" onclick="copyFb()">📋 Copy</button><button class="btn btn-o" onclick="clearForm()">Clear</button><button class="btn btn-p" onclick="saveRev()">Save Review</button><button class="btn btn-s" onclick="submitRev()">Submit & Next →</button></div></div></div>';
 }catch(e){
 document.getElementById('mainC').innerHTML='<div class="loading" style="color:var(--err)">Error loading data: '+e.message+'<br><br>Make sure config.json and data.json are in the same folder as this file.</div>';
 document.getElementById('facModal').classList.add('hide');
@@ -254,7 +254,7 @@ storKey='tbl_'+n.replace(/[^a-zA-Z0-9]/g,'_');
 assignedTeams=cfg.teams==='all'?[...new Set(DATA.students.map(s=>s.team))].sort((a,b)=>a-b):cfg.teams;
 document.getElementById('facModal').classList.add('hide');
 document.getElementById('facDisp').innerHTML='<strong>'+n+'</strong>';
-document.getElementById('floatExport').style.display='block';
+const abarExp=document.getElementById('abarExport');if(abarExp)abarExp.style.display='inline-block';
 renderTeams();updateProgress();
 }
 
