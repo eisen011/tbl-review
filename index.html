@@ -254,6 +254,7 @@ document.getElementById('facModal').classList.add('hide');
 document.getElementById('facDisp').innerHTML='<strong>'+n+'</strong>';
 
 renderTeams();updateProgress();
+loadFromSharePoint();
 }
 
 // ================================================================
@@ -676,6 +677,25 @@ function saveRev(){autoSave();toast('✓ Review saved')}
 // POWER AUTOMATE INTEGRATION
 // ================================================================
 const PA_URL='https://default1d6b1707baa94a3da8f8deabfb3d46.7b.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/489cf04b0b71452289ab0cdedf47cddb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RMufqqL-drgkOLTpeFnZi6TV1GaPapaJWF8W0UC5x6A';
+const PA_GET_URL='https://default1d6b1707baa94a3da8f8deabfb3d46.7b.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/248dde7f5ad74a0ea4330233af2deaf2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ExyPe2gt4Q9OPHE6dVMk73g_qRqFmT6ARvmVpRJsxLw';
+
+
+async function loadFromSharePoint(){
+try{
+toast('Loading your previous submissions...');
+const r=await fetch(PA_GET_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewedBy:curFac})});
+if(!r.ok){console.warn('PA GET failed:',r.status);return}
+const items=await r.json();
+if(!items||!items.length){toast('No previous submissions found');return}
+const d=getSaved();let restored=0;
+items.forEach(item=>{
+const email=item.StudentEmail||item.studentEmail;if(!email)return;
+if(!d[email]||!d[email].submitted){
+d[email]={scores:{behaviors:item.BehaviorsScore||item.behaviorsScore||0,tone:item.ToneScore||item.toneScore||0,descriptive:item.DescriptiveScore||item.descriptiveScore||0,formatting:item.FormattingScore||item.formattingScore||0},scored:true,submitted:true,spSynced:true,submittedBy:curFac,submittedAt:item.SubmittedAt||item.submittedAt||'',finalFb:item.FacultyComments||item.facultyComments||'',genText:item.FacultyComments||item.facultyComments||'',addCom:'(restored from SharePoint)',tags:item.Tags?item.Tags.split(', '):[]};restored++}});
+setSaved(d);
+if(restored>0){toast('Restored '+restored+' previous submissions');renderTeams();updateProgress()}
+else{toast('All submissions up to date')}
+}catch(e){console.warn('SP load error:',e);toast('Could not load previous submissions','warn')}}
 
 async function postToSharePoint(studentData){
 try{
@@ -708,6 +728,7 @@ return false;
 
 async function submitRev(){autoSave();const d=getSaved(),fb=document.getElementById('gText').value.trim();
 if(!fb){toast('Generate or write feedback before submitting');return}
+if(d[curStudent.email]?.submitted&&d[curStudent.email]?.spSynced){if(!confirm(firstName(curStudent.name)+' was already submitted. Submit again? This creates a duplicate.')){return}}
 const sc=getScores(),tot=Object.values(sc).reduce((a,b)=>a+(b||0),0);
 d[curStudent.email].submitted=true;d[curStudent.email].submittedAt=new Date().toISOString();
 d[curStudent.email].submittedBy=curFac;d[curStudent.email].finalFb=fb;setSaved(d);
