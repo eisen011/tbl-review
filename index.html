@@ -761,6 +761,14 @@ return false;
 
 async function submitRev(){autoSave();const d=getSaved(),fb=document.getElementById('gText').value.trim();
 if(!fb){toast('Generate or write feedback before submitting');return}
+// Safeguard: verify feedback references the correct student
+const sFirst=firstName(curStudent.name).toLowerCase();
+const fbLower=fb.toLowerCase().substring(0,300);
+if(!fbLower.includes(sFirst)){
+const wrongMsg='WARNING: This feedback does not appear to mention "'+firstName(curStudent.name)+'". It may contain feedback meant for a different student. Please verify or regenerate before submitting.';
+toast(wrongMsg,'warn');
+if(!confirm('The feedback text does not reference '+firstName(curStudent.name)+'. Are you SURE this is the correct feedback for this student?')){return}
+}
 const isUpdate=d[curStudent.email]?.submitted&&d[curStudent.email]?.spSynced&&d[curStudent.email]?.spItemId;
 if(isUpdate){if(!confirm('Update the existing review for '+firstName(curStudent.name)+'? This will overwrite the previous submission in SharePoint.')){return}}
 const sc=getScores(),tot=Object.values(sc).reduce((a,b)=>a+(b||0),0);
