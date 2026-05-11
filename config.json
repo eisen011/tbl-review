@@ -1,7 +1,7 @@
 {
   "title": "TBL Peer Feedback Faculty Review Portal",
-  "subtitle": "Class of 2028 \u2014 Thread 4",
-  "thread": "Thread 4",
+  "subtitle": "Class of 2029 — Thread 2",
+  "thread": "Thread 2",
   "faculty": {
     "Mary Smith": {
       "teams": [
@@ -12,58 +12,64 @@
         5
       ]
     },
-    "Cathy VanHook": {
+    "Jeremy Laukka": {
       "teams": [
         6,
         7,
         8,
         9,
-        10,
-        11
+        10
       ]
     },
-    "Jeremy Laukka": {
+    "Coral Matus": {
       "teams": [
+        11,
         12,
         13,
         14,
-        15,
-        16
-      ]
+        15
+      ],
+      "email": "coral.matus@toledo.edu"
     },
-    "Hamoun Delaviz": {
+    "Cathy VanHook": {
       "teams": [
+        16,
         17,
         18,
         19,
-        20,
-        21
+        20
       ]
     },
-    "Jolene Miller": {
+    "Wendy Lackey-Cornelison": {
       "teams": [
+        21,
         22,
         23,
         24,
-        25,
-        26
+        25
+      ],
+      "email": "Wendy.Lackey-Cornelison@UToledo.Edu"
+    },
+    "Hamoun Delaviz": {
+      "teams": [
+        26,
+        27,
+        28,
+        29,
+        30
       ]
     },
     "Jason Levine": {
       "teams": [
-        27,
-        28,
-        29,
-        30,
-        31
+        31,
+        32,
+        33,
+        34,
+        35
       ]
     },
     "Kate Eisenmann": {
       "teams": [
-        32,
-        33,
-        34,
-        35,
         36
       ]
     },
