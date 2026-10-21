@@ -1,0 +1,76 @@
+{
+  "title": "TBL Peer Feedback Faculty Review Portal",
+  "subtitle": "Class of 2029 — Thread 3",
+  "thread": "Thread 3",
+  "faculty": {
+    "Steven Haller": {
+      "teams": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "email": "steven.haller@utoledo.edu"
+    },
+    "Coral Matus": {
+      "teams": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "email": "coral.matus@utoledo.edu"
+    },
+    "Jolene Miller": {
+      "teams": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "email": "jolene.miller@utoledo.edu"
+    },
+    "Bindu Menon": {
+      "teams": [
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "email": "bindu.menon@utoledo.edu"
+    },
+    "Mary Smith": {
+      "teams": [
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "email": "MaryR.Smith@utoledo.edu"
+    },
+    "Aadil Maqsood": {
+      "teams": [
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "email": "aadil.maqsood@utoledo.edu"
+    },
+    "Dr. Kate (Admin)": {
+      "teams": "all"
+    }
+  }
+}
